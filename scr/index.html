@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Pet & Repet - A sua loja de animais de estimação</title>
+    <meta name="description" content="Descubra a melhor seleção de produtos para o seu animal de estimação. Alimentação, brinquedos, acessórios e muito mais.">
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="top-nav">
+        <div class="container">
+            <div class="nav-brand">Pet & Repet</div>
+            <div class="nav-tools">
+                <div class="search-bar">
+                    <input type="text" placeholder="Procurar produtos...">
+                    <button type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="tool-icons">
+                    <a href="/favoritos" class="tool-icon" title="Favoritos">
+                        <i class="fas fa-heart"></i>
+                    </a>
+                    <a href="/carrinho" class="tool-icon" title="Carrinho">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                    <a href="/conta" class="tool-icon" title="Minha Conta">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Menu -->
+    <div class="main-menu">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="/cao">CÃO</a></li>
+                <li><a href="/gato">GATO</a></li>
+                <li class="dropdown-item">
+                    PRODUTOS
+                    <div class="mega-dropdown">
+                        <div class="dropdown-columns">
+                            <div class="dropdown-col">
+                                <div class="col-header">
+                                    <span class="dropdown-title">Alimentação</span>
+                                </div>
+                                <div class="col-content">
+                                    <p>Ração Seca Premium</p>
+                                    <p>Ração Húmida</p>
+                                    <p>Snacks & Treats</p>
+                                    <p>Suplementos Vitamínicos</p>
+                                    <p>Comida Natural</p>
+                                </div>
+                            </div>
+                            <div class="dropdown-col">
+                                <div class="col-header">
+                                    <span class="dropdown-title">Acessórios</span>
+                                </div>
+                                <div class="col-content">
+                                    <p>Coleiras & Trelas</p>
+                                    <p>Camas & Almofadas</p>
+                                    <p>Brinquedos Interativos</p>
+                                    <p>Transportadoras</p>
+                                    <p>Comedouros & Bebedouros</p>
+                                </div>
+                            </div>
+                            <div class="dropdown-col">
+                                <div class="col-header">
+                                    <span class="dropdown-title">Cuidados</span>
+                                </div>
+                                <div class="col-content">
+                                    <p>Higiene & Banho</p>
+                                    <p>Saúde & Medicamentos</p>
+                                    <p>Grooming Profissional</p>
+                                    <p>Antiparasitários</p>
+                                    <p>Primeiros Socorros</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-footer">
+                            <a href="/produtos" class="view-all-link">
+                                Ver todos os produtos
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="/servicos">SERVIÇOS</a></li>
+                <li><a href="/sobre">SOBRE NÓS</a></li>
+                <li><a href="/contacto">CONTACTO</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content fade-in-up">
+                <h1>O Melhor para o Seu Melhor Amigo</h1>
+                <p>Descubra uma seleção premium de produtos para cães e gatos. Alimentação, brinquedos, acessórios e muito mais para manter o seu animal feliz e saudável.</p>
+                <div class="hero-buttons">
+                    <a href="#produtos" class="btn btn-primary">Ver Produtos</a>
+                    <a href="/servicos" class="btn btn-secondary">Nossos Serviços</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section id="produtos" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Produtos em Destaque</h2>
+                <p class="section-subtitle">Selecionamos os melhores produtos para o bem-estar do seu animal de estimação</p>
+            </div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-image"></div>
+                    <div class="product-content">
+                        <h3 class="product-title">Ração Premium Cão</h3>
+                        <div class="product-price">€29.99</div>
+                        <p class="product-description">Ração completa e equilibrada para cães adultos de todas as raças. Rico em proteínas e vitaminas.</p>
+                        <button class="product-button">Adicionar ao Carrinho</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image"></div>
+                    <div class="product-content">
+                        <h3 class="product-title">Brinquedo Interativo</h3>
+                        <div class="product-price">€15.99</div>
+                        <p class="product-description">Brinquedo estimulante que mantém o seu cão ativo e entretido durante horas.</p>
+                        <button class="product-button">Adicionar ao Carrinho</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image"></div>
+                    <div class="product-content">
+                        <h3 class="product-title">Cama Confortável</h3>
+                        <div class="product-price">€49.99</div>
+                        <p class="product-description">Cama ortopédica super confortável, ideal para o descanso perfeito do seu animal.</p>
+                        <button class="product-button">Adicionar ao Carrinho</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Porquê Escolher-nos?</h2>
+                <p class="section-subtitle">Oferecemos os melhores produtos e serviços para o seu animal de estimação</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🚚</div>
+                    <h3 class="feature-title">Entrega Rápida</h3>
+                    <p class="feature-description">Entregas em 24-48h em todo o país. Portes grátis em compras superiores a €50.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💎</div>
+                    <h3 class="feature-title">Qualidade Premium</h3>
+                    <p class="feature-description">Selecionamos apenas as melhores marcas e produtos de qualidade superior.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🏥</div>
+                    <h3 class="feature-title">Apoio Veterinário</h3>
+                    <p class="feature-description">Equipa de veterinários disponível para esclarecer todas as suas dúvidas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">O Que Dizem os Nossos Clientes</h2>
+                <p class="section-subtitle">Milhares de clientes satisfeitos confiam em nós</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Excelente atendimento e produtos de qualidade. O meu Golden Retriever adora a ração que comprei aqui!"</p>
+                    <div class="testimonial-author">Maria Silva</div>
+                    <div class="testimonial-role">Cliente desde 2022</div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Entrega super rápida e o apoio veterinário ajudou-me muito a escolher os produtos certos para o meu gato."</p>
+                    <div class="testimonial-author">João Santos</div>
+                    <div class="testimonial-role">Cliente desde 2021</div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Preços competitivos e variedade incrível. Recomendo a todos os donos de animais!"</p>
+                    <div class="testimonial-author">Ana Costa</div>
+                    <div class="testimonial-role">Cliente desde 2023</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Pet & Repet</h3>
+                    <p>A sua loja de confiança para produtos de animais de estimação. Cuidamos do seu melhor amigo como se fosse nosso.</p>
+                    <div style="margin-top: 20px;">
+                        <a href="#" style="color: #3498db; margin-right: 15px; font-size: 20px;"><i class="fab fa-facebook"></i></a>
+                        <a href="#" style="color: #3498db; margin-right: 15px; font-size: 20px;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="color: #3498db; margin-right: 15px; font-size: 20px;"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Produtos</h3>
+                    <ul>
+                        <li><a href="/cao">Produtos para Cães</a></li>
+                        <li><a href="/gato">Produtos para Gatos</a></li>
+                        <li><a href="/alimentacao">Alimentação</a></li>
+                        <li><a href="/brinquedos">Brinquedos</a></li>
+                        <li><a href="/acessorios">Acessórios</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Apoio ao Cliente</h3>
+                    <ul>
+                        <li><a href="/ajuda">Central de Ajuda</a></li>
+                        <li><a href="/entrega">Entregas</a></li>
+                        <li><a href="/devolucoes">Devoluções</a></li>
+                        <li><a href="/garantia">Garantias</a></li>
+                        <li><a href="/faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt" style="color: #3498db; margin-right: 8px;"></i>Rua das Flores, 123, Lisboa</li>
+                        <li><i class="fas fa-phone" style="color: #3498db; margin-right: 8px;"></i>+351 213 456 789</li>
+                        <li><i class="fas fa-envelope" style="color: #3498db; margin-right: 8px;"></i>info@petrepet.pt</li>
+                        <li><i class="fas fa-clock" style="color: #3498db; margin-right: 8px;"></i>Seg-Sex: 9h-18h</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Pet & Repet. Todos os direitos reservados. | <a href="/privacidade" style="color: #3498db;">Política de Privacidade</a> | <a href="/termos" style="color: #3498db;">Termos de Uso</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('.top-nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+            
+            // Close dropdown on scroll
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => {
+                item.classList.remove('dropdown-open');
+            });
+        });
+
+        // Dropdown management
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        
+        dropdownItems.forEach(item => {
+            const dropdown = item.querySelector('.mega-dropdown');
+            
+            item.addEventListener('mouseenter', function() {
+                this.classList.add('dropdown-open');
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.classList.remove('dropdown-open');
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown-item')) {
+                dropdownItems.forEach(item => {
+                    item.classList.remove('dropdown-open');
+                });
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add to cart functionality
+        document.querySelectorAll('.product-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const cartCount = document.querySelector('.cart-count');
+                let count = parseInt(cartCount.textContent);
+                cartCount.textContent = count + 1;
+                
+                // Add visual feedback
+                this.textContent = 'Adicionado!';
+                this.style.background = '#1abc9c';
+                setTimeout(() => {
+                    this.textContent = 'Adicionar ao Carrinho';
+                    this.style.background = '#3498db';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

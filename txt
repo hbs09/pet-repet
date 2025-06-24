@@ -1,0 +1,22 @@
+NAVBAR
+├── Cão
+├── Gato
+├── Produtos ▼
+│   ├── Por Tipo de Produto
+│   │   ├── Alimentos
+│   │   ├── Brinquedos
+│   │   ├── Acessórios
+│   │   ├── Higiene & Cuidados
+│   │   ├── Medicamentos
+│   │   ├── Camas & Casinhas
+│   │   └── Roupas
+│   ├── Por Animal
+│   │   ├── Cão
+│   │   ├── Gato
+│   │   ├── Pássaro
+│   │   ├── Peixe
+│   │   └── Roedor
+├── Promoções
+├── Sobre
+
+
