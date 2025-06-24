@@ -590,6 +590,8 @@ body {
 /* --- HERO SECTION MINIMALIST --- */
 .hero {
     background-image:url(/media/index/hero-wallpaper.jpg);
+    background-size: cover;
+    background-position: center;
     padding: 140px 0 100px;
     color: white;
     text-align: center;
