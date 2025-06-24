@@ -589,7 +589,7 @@ body {
 
 /* --- HERO SECTION MINIMALIST --- */
 .hero {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    background-image:url(/media/index/hero-wallpaper.jpg);
     padding: 140px 0 100px;
     color: white;
     text-align: center;

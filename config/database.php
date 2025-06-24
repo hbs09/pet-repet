@@ -8,6 +8,9 @@ class Database {
 
     public function getConnection() {
         $this->conn = null;
+        if (!extension_loaded('pdo_mysql')) {
+            die("PDO MySQL driver not installed. Please enable it in your php.ini.");
+        }
         try {
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
             $this->conn->exec("set names utf8");
