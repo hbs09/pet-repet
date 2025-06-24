@@ -30,11 +30,7 @@ CREATE TABLE products (
     is_active BOOLEAN DEFAULT TRUE,
     is_featured BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id),
-    INDEX idx_category (category_id),
-    INDEX idx_featured (is_featured),
-    INDEX idx_price (price),
-    INDEX idx_stock (stock_quantity)
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 -- Product images table
@@ -62,8 +58,7 @@ CREATE TABLE users (
     postal_code VARCHAR(20),
     is_active BOOLEAN DEFAULT TRUE,
     email_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_email (email)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Orders table
@@ -80,10 +75,7 @@ CREATE TABLE orders (
     shipping_address TEXT NOT NULL,
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    INDEX idx_user (user_id),
-    INDEX idx_status (status),
-    INDEX idx_date (created_at)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- Order items table
@@ -109,9 +101,7 @@ CREATE TABLE shopping_cart (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    INDEX idx_user (user_id),
-    INDEX idx_session (session_id)
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 -- Wishlist table
@@ -138,10 +128,7 @@ CREATE TABLE product_reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_product (product_id),
-    INDEX idx_rating (rating),
-    INDEX idx_approved (is_approved)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Coupons table
@@ -156,9 +143,7 @@ CREATE TABLE coupons (
     is_active BOOLEAN DEFAULT TRUE,
     valid_from TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     valid_until TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_code (code),
-    INDEX idx_active (is_active)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Newsletter subscriptions
@@ -167,8 +152,7 @@ CREATE TABLE newsletter_subscriptions (
     email VARCHAR(255) UNIQUE NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    unsubscribed_at TIMESTAMP NULL,
-    INDEX idx_email (email)
+    unsubscribed_at TIMESTAMP NULL
 );
 
 -- Insert sample categories
@@ -220,6 +204,22 @@ INSERT INTO users (email, password_hash, first_name, last_name, phone, is_active
 ('maria.silva@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Maria', 'Silva', '+351 912 345 678', TRUE, TRUE),
 ('joao.santos@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'João', 'Santos', '+351 923 456 789', TRUE, TRUE);
 
+-- Insert sample orders
+INSERT INTO orders (user_id, order_number, status, total_amount, shipping_amount, customer_name, customer_email, customer_phone, shipping_address) VALUES
+(2, 'PR-2024-001', 'delivered', 45.98, 5.00, 'Maria Silva', 'maria.silva@email.com', '+351 912 345 678', 'Avenida da Liberdade, 456, 1250-096 Lisboa'),
+(3, 'PR-2024-002', 'processing', 29.99, 0.00, 'João Santos', 'joao.santos@email.com', '+351 923 456 789', 'Rua do Comércio, 789, 4000-001 Porto');
+
+-- Insert sample order items
+INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, total_price) VALUES
+(1, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99),
+(1, 2, 'Brinquedo Interativo Kong', 1, 12.99, 12.99),
+(1, 7, 'Snacks Naturais Cão', 1, 5.99, 5.99),
+(2, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99);
+
+-- Insert sample coupons
+INSERT INTO coupons (code, type, value, minimum_amount, usage_limit, valid_until) VALUES
+('WELCOME10', 'percentage', 10.00, 30.00, 100, '2024-12-31 23:59:59'),
+('FRETE50', 'fixed', 5.00, 50.00, NULL, '2024-12-31 23:59:59');
 -- Insert sample orders
 INSERT INTO orders (user_id, order_number, status, total_amount, shipping_amount, customer_name, customer_email, customer_phone, shipping_address) VALUES
 (2, 'PR-2024-001', 'delivered', 45.98, 5.00, 'Maria Silva', 'maria.silva@email.com', '+351 912 345 678', 'Avenida da Liberdade, 456, 1250-096 Lisboa'),
