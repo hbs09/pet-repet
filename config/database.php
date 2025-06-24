@@ -3,7 +3,7 @@ class Database {
     private $host = "localhost";
     private $db_name = "pet_repet";
     private $username = "root";
-    private $password = "";
+    private $password = "2144";
     public $conn;
 
     public function getConnection() {
