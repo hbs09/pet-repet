@@ -224,10 +224,10 @@ INSERT INTO coupons (code, type, value, minimum_amount, usage_limit, valid_until
 
 
 -- Create indexes for better performance
-INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, total_price) VALUES
-(1, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99),
-(1, 2, 'Brinquedo Interativo Kong', 1, 12.99, 12.99),
-(1, 7, 'Snacks Naturais Cão', 1, 5.99, 5.99),
+CREATE INDEX idx_products_price ON products(price);
+CREATE INDEX idx_products_stock ON products(stock_quantity);
+CREATE INDEX idx_orders_date ON orders(created_at);
+CREATE INDEX idx_product_reviews_approved ON product_reviews(is_approved);
 (2, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99);
 
 
