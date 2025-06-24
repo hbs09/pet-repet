@@ -31,6 +31,8 @@ $featured_products = $product->readFeatured();
 // Get categories
 $categories = $category->readAll();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>

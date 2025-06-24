@@ -8,8 +8,10 @@ CREATE TABLE categories (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     image_url VARCHAR(255),
+    parent_id INT DEFAULT NULL,
     is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
 );
 
 -- Products table
@@ -17,8 +19,10 @@ CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description TEXT,
+    short_description VARCHAR(500),
     price DECIMAL(10,2) NOT NULL,
     sale_price DECIMAL(10,2) DEFAULT NULL,
+    sku VARCHAR(100) UNIQUE,
     image_url VARCHAR(255),
     category_id INT NOT NULL,
     brand VARCHAR(100),
@@ -28,7 +32,21 @@ CREATE TABLE products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id),
     INDEX idx_category (category_id),
-    INDEX idx_featured (is_featured)
+    INDEX idx_featured (is_featured),
+    INDEX idx_price (price),
+    INDEX idx_stock (stock_quantity)
+);
+
+-- Product images table
+CREATE TABLE product_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    alt_text VARCHAR(255),
+    is_primary BOOLEAN DEFAULT FALSE,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 -- Users table
@@ -43,6 +61,7 @@ CREATE TABLE users (
     city VARCHAR(100),
     postal_code VARCHAR(20),
     is_active BOOLEAN DEFAULT TRUE,
+    email_verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_email (email)
 );
@@ -63,7 +82,8 @@ CREATE TABLE orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     INDEX idx_user (user_id),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_date (created_at)
 );
 
 -- Order items table
@@ -86,54 +106,6 @@ CREATE TABLE shopping_cart (
     session_id VARCHAR(255) DEFAULT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    INDEX idx_user (user_id),
-    INDEX idx_session (session_id)
-);
-
--- Insert sample categories
-INSERT INTO categories (name, description, image_url) VALUES
-('Cães', 'Produtos para cães de todas as raças e idades', '/images/categories/dogs.jpg'),
-('Gatos', 'Produtos para gatos de todas as raças e idades', '/images/categories/cats.jpg'),
-('Alimentação', 'Ração, snacks e suplementos', '/images/categories/food.jpg'),
-('Brinquedos', 'Brinquedos interativos e de entretenimento', '/images/categories/toys.jpg'),
-('Acessórios', 'Coleiras, camas, transportadoras e mais', '/images/categories/accessories.jpg'),
-('Higiene', 'Produtos de limpeza e cuidados', '/images/categories/hygiene.jpg');
-
--- Insert sample products
-INSERT INTO products (name, description, price, sale_price, image_url, category_id, brand, stock_quantity, is_featured) VALUES
-('Ração Premium Cão Adulto', 'Ração completa e equilibrada para cães adultos de todas as raças. Rico em proteínas de alta qualidade e vitaminas essenciais.', 29.99, NULL, '/images/products/dog-food-premium.jpg', 3, 'Royal Canin', 50, TRUE),
-('Brinquedo Interativo Kong', 'Brinquedo resistente que mantém o cão entretido durante horas. Pode ser recheado com petiscos para maior diversão.', 15.99, 12.99, '/images/products/kong-toy.jpg', 4, 'Kong', 30, TRUE),
-('Cama Ortopédica Grande', 'Cama ortopédica super confortável com espuma memory foam. Ideal para cães grandes e idosos.', 49.99, NULL, '/images/products/orthopedic-bed.jpg', 5, 'Trixie', 15, TRUE),
-('Ração Gato Esterilizado', 'Ração especial para gatos esterilizados. Controla o peso e previne problemas urinários.', 24.99, NULL, '/images/products/cat-food-sterilized.jpg', 3, 'Hills', 40, FALSE),
-('Arranhador Torre', 'Arranhador alto com várias plataformas e brinquedos. Ideal para gatos ativos e apartamentos.', 79.99, 69.99, '/images/products/cat-tower.jpg', 2, 'Catit', 10, TRUE),
-('Shampoo Cão Pele Sensível', 'Shampoo hipoalergênico para cães com pele sensível. Fórmula suave com ingredientes naturais.', 12.99, NULL, '/images/products/sensitive-shampoo.jpg', 6, 'Virbac', 25, FALSE),
-('Coleira Ajustável', 'Coleira resistente e confortável com fecho de segurança. Disponível em várias cores.', 8.99, NULL, '/images/products/collar.jpg', 5, 'Ferplast', 60, FALSE),
-('Snacks Naturais Cão', 'Petiscos naturais sem conservantes. Ideais para treino e recompensa.', 6.99, 5.99, '/images/products/natural-treats.jpg', 3, 'Zuke', 80, FALSE),
-('Brinquedo Ratinho Gato', 'Brinquedo de pelúcia com catnip. Estimula o instinto de caça dos gatos.', 4.99, NULL, '/images/products/cat-mouse-toy.jpg', 4, 'Petstages', 45, FALSE),
-('Transportadora Pequena', 'Transportadora segura e confortável para viagens. Aprovada para transporte aéreo.', 35.99, NULL, '/images/products/carrier-small.jpg', 5, 'Savic', 20, FALSE);
-
--- Create admin user (password: admin123)
-INSERT INTO users (email, password_hash, first_name, last_name, address, city, postal_code, is_active) VALUES
-('admin@petrepet.pt', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'Pet&Repet', 'Rua das Flores, 123', 'Lisboa', '1000-001', TRUE);
-
--- Create sample customers
-INSERT INTO users (email, password_hash, first_name, last_name, phone, address, city, postal_code, is_active) VALUES
-('henrique@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Maria', 'Silva', '+351 912 345 678', 'Avenida da Liberdade, 456', 'Lisboa', '1250-096', TRUE);
-
--- Insert sample orders
-INSERT INTO orders (user_id, order_number, status, total_amount, shipping_amount, customer_name, customer_email, customer_phone, shipping_address) VALUES
-(2, 'PR-2024-001', 'delivered', 45.98, 5.00, 'Maria Silva', 'maria.silva@email.com', '+351 912 345 678', 'Avenida da Liberdade, 456, 1250-096 Lisboa'),
-(3, 'PR-2024-002', 'processing', 29.99, 0.00, 'João Santos', 'joao.santos@email.com', '+351 923 456 789', 'Rua do Comércio, 789, 4000-001 Porto');
-
--- Insert sample order items
-INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, total_price) VALUES
-(1, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99),
-(1, 2, 'Brinquedo Interativo Kong', 1, 12.99, 12.99),
-(1, 8, 'Snacks Naturais Cão', 1, 5.99, 5.99),
-(2, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99);
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -168,7 +140,8 @@ CREATE TABLE product_reviews (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_product (product_id),
-    INDEX idx_rating (rating)
+    INDEX idx_rating (rating),
+    INDEX idx_approved (is_approved)
 );
 
 -- Coupons table
@@ -224,8 +197,9 @@ INSERT INTO products (name, description, short_description, price, sale_price, s
 ('Brinquedo Interativo Kong', 'Brinquedo resistente que mantém o cão entretido. Pode ser recheado com petiscos.', 'Brinquedo estimulante que mantém o seu cão ativo', 15.99, 12.99, 'TOY-KONG-001', 10, 'Kong', 30, TRUE),
 ('Cama Ortopédica Grande', 'Cama ortopédica super confortável, ideal para cães grandes. Espuma memory foam.', 'Cama ortopédica super confortável', 49.99, NULL, 'BED-ORTHO-001', 13, 'Trixie', 15, TRUE),
 ('Ração Gato Esterilizado', 'Ração especial para gatos esterilizados. Controla o peso e previne problemas urinários.', 'Ração especial para gatos esterilizados', 24.99, NULL, 'CAT-FOOD-001', 7, 'Hill\'s', 40, FALSE),
-('Arranhador Torre', 'Arranhador alto com várias plataformas. Ideal para gatos ativos.', 'Arranhador com múltiplas plataformas', 79.99, 69.99, 'CAT-SCRATCH-001', 4, 'Catit', 10, TRUE),
-('Shampoo Cão Pele Sensível', 'Shampoo hipoalergênico para cães com pele sensível. Fórmula suave e natural.', 'Shampoo hipoalergênico para pele sensível', 12.99, NULL, 'SHAMP-SENS-001', 14, 'Virbac', 25, FALSE);
+('Arranhador Torre', 'Arranhador alto com várias plataformas. Ideal para gatos ativos.', 'Arranhador com múltiplas plataformas', 79.99, 69.99, 'CAT-SCRATCH-001', 2, 'Catit', 10, TRUE),
+('Shampoo Cão Pele Sensível', 'Shampoo hipoalergênico para cães com pele sensível. Fórmula suave e natural.', 'Shampoo hipoalergênico para pele sensível', 12.99, NULL, 'SHAMP-SENS-001', 14, 'Virbac', 25, FALSE),
+('Snacks Naturais Cão', 'Petiscos naturais sem conservantes. Ideais para treino e recompensa.', 'Petiscos naturais para treino', 6.99, 5.99, 'TREATS-001', 9, 'Zuke', 80, FALSE);
 
 -- Insert sample product images
 INSERT INTO product_images (product_id, image_url, alt_text, is_primary) VALUES
@@ -234,8 +208,34 @@ INSERT INTO product_images (product_id, image_url, alt_text, is_primary) VALUES
 (3, '/images/products/orthopedic-bed.jpg', 'Cama Ortopédica Grande', TRUE),
 (4, '/images/products/cat-food-sterilized.jpg', 'Ração Gato Esterilizado', TRUE),
 (5, '/images/products/cat-tower.jpg', 'Arranhador Torre', TRUE),
-(6, '/images/products/sensitive-shampoo.jpg', 'Shampoo Pele Sensível', TRUE);
+(6, '/images/products/sensitive-shampoo.jpg', 'Shampoo Pele Sensível', TRUE),
+(7, '/images/products/natural-treats.jpg', 'Snacks Naturais Cão', TRUE);
 
+-- Create admin user (password: admin123 - should be properly hashed in production)
+INSERT INTO users (email, password_hash, first_name, last_name, is_active, email_verified) VALUES
+('admin@petrepet.pt', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'Pet&Repet', TRUE, TRUE);
+
+-- Create some sample customers
+INSERT INTO users (email, password_hash, first_name, last_name, phone, is_active, email_verified) VALUES
+('maria.silva@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Maria', 'Silva', '+351 912 345 678', TRUE, TRUE),
+('joao.santos@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'João', 'Santos', '+351 923 456 789', TRUE, TRUE);
+
+-- Insert sample orders
+INSERT INTO orders (user_id, order_number, status, total_amount, shipping_amount, customer_name, customer_email, customer_phone, shipping_address) VALUES
+(2, 'PR-2024-001', 'delivered', 45.98, 5.00, 'Maria Silva', 'maria.silva@email.com', '+351 912 345 678', 'Avenida da Liberdade, 456, 1250-096 Lisboa'),
+(3, 'PR-2024-002', 'processing', 29.99, 0.00, 'João Santos', 'joao.santos@email.com', '+351 923 456 789', 'Rua do Comércio, 789, 4000-001 Porto');
+
+-- Insert sample order items
+INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, total_price) VALUES
+(1, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99),
+(1, 2, 'Brinquedo Interativo Kong', 1, 12.99, 12.99),
+(1, 7, 'Snacks Naturais Cão', 1, 5.99, 5.99),
+(2, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99);
+
+-- Insert sample coupons
+INSERT INTO coupons (code, type, value, minimum_amount, usage_limit, valid_until) VALUES
+('WELCOME10', 'percentage', 10.00, 30.00, 100, '2024-12-31 23:59:59'),
+('FRETE50', 'fixed', 5.00, 50.00, NULL, '2024-12-31 23:59:59');
 -- Create admin user (password: admin123 - should be properly hashed in production)
 INSERT INTO users (email, password_hash, first_name, last_name, is_active, email_verified) VALUES
 ('admin@petrepet.pt', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'Pet&Repet', TRUE, TRUE);
