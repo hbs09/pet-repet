@@ -4,6 +4,7 @@ require_once 'config/database.php';
 require_once 'classes/Product.php';
 require_once 'classes/Category.php';
 require_once 'classes/Cart.php';
+require_once 'classes/CategoryManager.php';
 
 // Initialize database connection
 $database = new Database();
@@ -13,6 +14,7 @@ $db = $database->getConnection();
 $product = new Product($db);
 $category = new Category($db);
 $cart = new Cart($db);
+$categoryManager = new CategoryManager($db);
 
 // Get session ID for cart
 if (!isset($_SESSION['session_id'])) {
@@ -28,8 +30,9 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
 // Get featured products
 $featured_products = $product->readFeatured();
 
-// Get categories
-$categories = $category->readAll();
+// Get categories for menu
+$product_types = $categoryManager->getProductTypes();
+$animal_categories = $categoryManager->getAnimalCategories();
 ?>
 
 
@@ -38,7 +41,7 @@ $categories = $category->readAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/scr/style.css">
+    <link rel="stylesheet" href="./scr/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -86,22 +89,83 @@ $categories = $category->readAll();
     <div class="main-menu">
         <div class="container">
             <ul class="nav-menu">
-                <li><a href="categoria.php?id=1">CÃO</a></li>
-                <li><a href="categoria.php?id=2">GATO</a></li>
-                <li class="dropdown-item">
-                    PRODUTOS
+                <li class="nav-item"><a href="categoria.php?id=6" class="nav-link"> CÃES</a></li>
+                <li class="nav-item"><a href="categoria.php?id=7" class="nav-link"> GATOS</a></li>
+                <li class="nav-item dropdown-item">
+                    <a href="produtos.php" class="nav-link">PRODUTOS</a>
                     <div class="mega-dropdown">
                         <div class="dropdown-columns">
-                            <?php while ($cat_row = $categories->fetch(PDO::FETCH_ASSOC)): ?>
-                                <div class="dropdown-col">
-                                    <div class="col-header">
-                                        <span class="dropdown-title"><?php echo htmlspecialchars($cat_row['name']); ?></span>
-                                    </div>
-                                    <div class="col-content">
-                                        <p><a href="categoria.php?id=<?php echo $cat_row['id']; ?>"><?php echo htmlspecialchars($cat_row['description']); ?></a></p>
+                            <!-- Seção: Tipo de produto -->
+                            <div class="dropdown-col category-section">
+                                <div class="col-header">
+                                    <div class="main-category">
+                                        <a href="categoria.php?parent=1" class="category-title"><i class="fas fa-box-open"></i> Tipo de produto</a>
                                     </div>
                                 </div>
-                            <?php endwhile; ?>
+                                <div class="col-content">
+                                    <ul class="dropdown-list">
+                                        <?php
+                                        // Obter subcategorias de tipo de produto
+                                        $product_stmt = $db->prepare("SELECT id, name FROM categories WHERE parent_id = 1 AND is_active = TRUE ORDER BY name");
+                                        $product_stmt->execute();
+                                        while ($product_cat = $product_stmt->fetch(PDO::FETCH_ASSOC)): ?>
+                                            <li>
+                                                <a href="categoria.php?id=<?php echo $product_cat['id']; ?>" class="dropdown-link">
+                                                    <?php echo htmlspecialchars($product_cat['name']); ?>
+                                                </a>
+                                            </li>
+                                        <?php endwhile; ?>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Seção: Animal -->
+                            <div class="dropdown-col category-section">
+                                <div class="col-header">
+                                    <div class="main-category">
+                                        <a href="categoria.php?parent=2" class="category-title"><i class="fas fa-paw"></i> Animal</a>
+                                    </div>
+                                </div>
+                                <div class="col-content">
+                                    <ul class="dropdown-list">
+                                        <?php
+                                        // Obter subcategorias de animais
+                                        $animal_stmt = $db->prepare("SELECT id, name FROM categories WHERE parent_id = 2 AND is_active = TRUE ORDER BY name");
+                                        $animal_stmt->execute();
+                                        while ($animal_cat = $animal_stmt->fetch(PDO::FETCH_ASSOC)): ?>
+                                            <li>
+                                                <a href="categoria.php?id=<?php echo $animal_cat['id']; ?>" class="dropdown-link">
+                                                    <?php echo htmlspecialchars($animal_cat['name']); ?>
+                                                </a>
+                                            </li>
+                                        <?php endwhile; ?>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Seção: Marca -->
+                            <div class="dropdown-col category-section">
+                                <div class="col-header">
+                                    <div class="main-category">
+                                        <a href="categoria.php?parent=3" class="category-title"><i class="fas fa-tags"></i> Marca</a>
+                                    </div>
+                                </div>
+                                <div class="col-content">
+                                    <ul class="dropdown-list">
+                                        <?php
+                                        // Obter subcategorias de marcas
+                                        $brand_stmt = $db->prepare("SELECT id, name FROM categories WHERE parent_id = 3 AND is_active = TRUE ORDER BY name");
+                                        $brand_stmt->execute();
+                                        while ($brand_cat = $brand_stmt->fetch(PDO::FETCH_ASSOC)): ?>
+                                            <li>
+                                                <a href="categoria.php?id=<?php echo $brand_cat['id']; ?>" class="dropdown-link">
+                                                    <?php echo htmlspecialchars($brand_cat['name']); ?>
+                                                </a>
+                                            </li>
+                                        <?php endwhile; ?>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="dropdown-footer">
                             <a href="produtos.php" class="view-all-link">
@@ -111,9 +175,9 @@ $categories = $category->readAll();
                         </div>
                     </div>
                 </li>
-                <li><a href="servicos.php">SERVIÇOS</a></li>
-                <li><a href="sobre.php">SOBRE NÓS</a></li>
-                <li><a href="contacto.php">CONTACTO</a></li>
+                <li class="nav-item"><a href="servicos.php" class="nav-link">SERVIÇOS</a></li>
+                <li class="nav-item"><a href="sobre.php" class="nav-link">SOBRE NÓS</a></li>
+                <li class="nav-item"><a href="contacto.php" class="nav-link">CONTACTO</a></li>
             </ul>
         </div>
     </div>
@@ -123,7 +187,7 @@ $categories = $category->readAll();
         <div class="container">
             <div class="hero-content fade-in-up">
                 <h1>O Melhor para o Seu Melhor Amigo</h1>
-                <p>Descubra uma seleção premium de produtos para cães e gatos. Alimentação, brinquedos, acessórios e muito mais para manter o seu animal feliz e saudável.</p>
+                <p>Descubra uma seleção premium de produtos para manter o seu animal feliz e saudável.</p>
                 <div class="hero-buttons">
                     <a href="#produtos" class="btn btn-primary">Ver Produtos</a>
                     <a href="servicos.php" class="btn btn-secondary">Nossos Serviços</a>
@@ -133,20 +197,26 @@ $categories = $category->readAll();
     </section>
 
     <!-- Featured Products Section -->
-    <section id="produtos" class="section">
+    <section id="produtos" class="section animate-on-scroll">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Produtos em Destaque</h2>
                 <p class="section-subtitle">Selecionamos os melhores produtos para o bem-estar do seu animal de estimação</p>
             </div>
             <div class="product-grid">
-                <?php while ($row = $featured_products->fetch(PDO::FETCH_ASSOC)): ?>
+                <?php 
+                $product_count = 0;
+                while ($row = $featured_products->fetch(PDO::FETCH_ASSOC)): 
+                    if ($product_count >= 3) break;
+                ?>
                     <div class="product-card">
-                        <div class="product-image">
-                            <?php if($row['image_url']): ?>
-                                <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
-                            <?php endif; ?>
-                        </div>
+                        <a href="produto.php?id=<?php echo $row['id']; ?>">
+                            <div class="product-image">
+                                <?php if($row['image_url']): ?>
+                                    <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
+                                <?php endif; ?>
+                            </div>
+                        </a>
                         <div class="product-content">
                             <h3 class="product-title"><?php echo htmlspecialchars($row['name']); ?></h3>
                             <div class="product-price">
@@ -157,22 +227,24 @@ $categories = $category->readAll();
                                     €<?php echo number_format($row['price'], 2); ?>
                                 <?php endif; ?>
                             </div>
-                            <p class="product-description"><?php echo htmlspecialchars(substr($row['description'], 0, 100)) . '...'; ?></p>
                             <div class="product-actions">
                                 <button class="product-button add-to-cart" data-product-id="<?php echo $row['id']; ?>">
                                     Adicionar ao Carrinho
                                 </button>
-                                <a href="produto.php?id=<?php echo $row['id']; ?>" class="product-link">Ver Detalhes</a>
+                                <a href="#" class="product-button-icon add-to-wishlist" data-product-id="<?php echo $row['id']; ?>" title="Adicionar aos Favoritos"><i class="far fa-heart"></i></a>
                             </div>
                         </div>
                     </div>
-                <?php endwhile; ?>
+                <?php 
+                    $product_count++;
+                endwhile; 
+                ?>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="section features">
+    <section class="section features animate-on-scroll">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Porquê Escolher-nos?</h2>
@@ -199,7 +271,7 @@ $categories = $category->readAll();
     </section>
 
     <!-- Testimonials Section -->
-    <section class="section testimonials">
+    <section class="section testimonials animate-on-scroll">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">O Que Dizem os Nossos Clientes</h2>
@@ -208,18 +280,24 @@ $categories = $category->readAll();
             <div class="testimonials-grid">
                 <div class="testimonial-card">
                     <p class="testimonial-text">"Excelente atendimento e produtos de qualidade. O meu Golden Retriever adora a ração que comprei aqui!"</p>
-                    <div class="testimonial-author">Maria Silva</div>
-                    <div class="testimonial-role">Cliente desde 2022</div>
+                    <div class="testimonial-author-info">
+                        <div class="testimonial-author">Maria Silva</div>
+                        <div class="testimonial-role">Cliente desde 2022</div>
+                    </div>
                 </div>
                 <div class="testimonial-card">
                     <p class="testimonial-text">"Entrega super rápida e o apoio veterinário ajudou-me muito a escolher os produtos certos para o meu gato."</p>
-                    <div class="testimonial-author">João Santos</div>
-                    <div class="testimonial-role">Cliente desde 2021</div>
+                    <div class="testimonial-author-info">
+                        <div class="testimonial-author">João Santos</div>
+                        <div class="testimonial-role">Cliente desde 2021</div>
+                    </div>
                 </div>
                 <div class="testimonial-card">
                     <p class="testimonial-text">"Preços competitivos e variedade incrível. Recomendo a todos os donos de animais!"</p>
-                    <div class="testimonial-author">Ana Costa</div>
-                    <div class="testimonial-role">Cliente desde 2023</div>
+                    <div class="testimonial-author-info">
+                        <div class="testimonial-author">Ana Costa</div>
+                        <div class="testimonial-role">Cliente desde 2023</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -232,10 +310,10 @@ $categories = $category->readAll();
                 <div class="footer-section">
                     <h3>Pet & Repet</h3>
                     <p>A sua loja de confiança para produtos de animais de estimação. Cuidamos do seu melhor amigo como se fosse nosso.</p>
-                    <div style="margin-top: 20px;">
-                        <a href="#" style="color: #3498db; margin-right: 15px; font-size: 20px;"><i class="fab fa-facebook"></i></a>
-                        <a href="#" style="color: #3498db; margin-right: 15px; font-size: 20px;"><i class="fab fa-instagram"></i></a>
-                        <a href="#" style="color: #3498db; margin-right: 15px; font-size: 20px;"><i class="fab fa-twitter"></i></a>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -261,29 +339,44 @@ $categories = $category->readAll();
                 <div class="footer-section">
                     <h3>Contacto</h3>
                     <ul>
-                        <li><i class="fas fa-map-marker-alt" style="color: #3498db; margin-right: 8px;"></i>Rua das Flores, 123, Lisboa</li>
-                        <li><i class="fas fa-phone" style="color: #3498db; margin-right: 8px;"></i>+351 213 456 789</li>
-                        <li><i class="fas fa-envelope" style="color: #3498db; margin-right: 8px;"></i>info@petrepet.pt</li>
-                        <li><i class="fas fa-clock" style="color: #3498db; margin-right: 8px;"></i>Seg-Sex: 9h-18h</li>
+                        <li><i class="fas fa-map-marker-alt"></i>Rua das Flores, 123, Lisboa</li>
+                        <li><i class="fas fa-phone"></i>+351 213 456 789</li>
+                        <li><i class="fas fa-envelope"></i>info@petrepet.pt</li>
+                        <li><i class="fas fa-clock"></i>Seg-Sex: 9h-18h</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Pet & Repet. Todos os direitos reservados. | <a href="privacidade.php" style="color: #3498db;">Política de Privacidade</a> | <a href="termos.php" style="color: #3498db;">Termos de Uso</a></p>
+                <p>&copy; 2024 Pet & Repet. Todos os direitos reservados. | <a href="privacidade.php">Política de Privacidade</a> | <a href="termos.php">Termos de Uso</a></p>
             </div>
         </div>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./scr/categories.js"></script>
     <script>
         // Add scroll effect to navbar
+        let lastScrollTop = 0;
         window.addEventListener('scroll', function() {
             const nav = document.querySelector('.top-nav');
+            const mainMenu = document.querySelector('.main-menu');
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
             if (window.scrollY > 50) {
                 nav.classList.add('scrolled');
             } else {
                 nav.classList.remove('scrolled');
             }
+
+            // Auto-hide main menu on scroll
+            if (scrollTop > lastScrollTop && scrollTop > nav.offsetHeight) {
+                // Scroll Down
+                mainMenu.classList.add('hidden');
+            } else {
+                // Scroll Up
+                mainMenu.classList.remove('hidden');
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
             
             // Close dropdown on scroll
             const dropdownItems = document.querySelectorAll('.dropdown-item');
@@ -363,6 +456,46 @@ $categories = $category->readAll();
                     alert('Erro ao adicionar produto ao carrinho');
                 }
             });
+        });
+
+        // Add to wishlist functionality
+        $(document).on('click', '.add-to-wishlist', function(e) {
+            e.preventDefault();
+            const button = $(this);
+            const icon = button.find('i');
+            
+            button.toggleClass('active');
+            
+            if (button.hasClass('active')) {
+                icon.removeClass('far').addClass('fas');
+                // Opcional: Aqui pode adicionar uma chamada AJAX para guardar x    nos favoritos no servidor
+            } else {
+                icon.removeClass('fas').addClass('far');
+                // Opcional: Aqui pode adicionar uma chamada AJAX para remover dos favoritos no servidor
+            }
+        });
+
+        // Animações ao rolar a página
+        document.addEventListener("DOMContentLoaded", function() {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+            if ("IntersectionObserver" in window) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    rootMargin: '0px 0px -100px 0px' // Aciona a animação um pouco antes do elemento estar totalmente visível
+                });
+
+                animatedElements.forEach(el => observer.observe(el));
+            } else {
+                // Fallback para browsers antigos: mostra todos os elementos de uma vez
+                animatedElements.forEach(el => el.classList.add('is-visible'));
+            }
         });
     </script>
 </body>
