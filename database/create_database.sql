@@ -215,10 +215,7 @@ INSERT INTO product_images (product_id, image_url, alt_text, is_primary) VALUES
 INSERT INTO users (email, password_hash, first_name, last_name, is_active, email_verified) VALUES
 ('admin@petrepet.pt', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'Pet&Repet', TRUE, TRUE);
 
--- Create some sample customers
-INSERT INTO users (email, password_hash, first_name, last_name, phone, is_active, email_verified) VALUES
-('maria.silva@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Maria', 'Silva', '+351 912 345 678', TRUE, TRUE),
-('joao.santos@email.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'João', 'Santos', '+351 923 456 789', TRUE, TRUE);
+
 
 -- Insert sample orders
 INSERT INTO orders (user_id, order_number, status, total_amount, shipping_amount, customer_name, customer_email, customer_phone, shipping_address) VALUES
@@ -236,9 +233,6 @@ INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_pric
 INSERT INTO coupons (code, type, value, minimum_amount, usage_limit, valid_until) VALUES
 ('WELCOME10', 'percentage', 10.00, 30.00, 100, '2024-12-31 23:59:59'),
 ('FRETE50', 'fixed', 5.00, 50.00, NULL, '2024-12-31 23:59:59');
--- Create admin user (password: admin123 - should be properly hashed in production)
-INSERT INTO users (email, password_hash, first_name, last_name, is_active, email_verified) VALUES
-('admin@petrepet.pt', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'Pet&Repet', TRUE, TRUE);
 
 -- Create some sample customers
 INSERT INTO users (email, password_hash, first_name, last_name, phone, is_active, email_verified) VALUES
