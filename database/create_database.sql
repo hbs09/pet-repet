@@ -220,22 +220,18 @@ INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_pric
 INSERT INTO coupons (code, type, value, minimum_amount, usage_limit, valid_until) VALUES
 ('WELCOME10', 'percentage', 10.00, 30.00, 100, '2024-12-31 23:59:59'),
 ('FRETE50', 'fixed', 5.00, 50.00, NULL, '2024-12-31 23:59:59');
--- Insert sample orders
-INSERT INTO orders (user_id, order_number, status, total_amount, shipping_amount, customer_name, customer_email, customer_phone, shipping_address) VALUES
-(2, 'PR-2024-001', 'delivered', 45.98, 5.00, 'Maria Silva', 'maria.silva@email.com', '+351 912 345 678', 'Avenida da Liberdade, 456, 1250-096 Lisboa'),
-(3, 'PR-2024-002', 'processing', 29.99, 0.00, 'João Santos', 'joao.santos@email.com', '+351 923 456 789', 'Rua do Comércio, 789, 4000-001 Porto');
 
--- Insert sample order items
+-- Create indexes for better performance
+CREATE INDEX idx_products_price ON products(price);
+CREATE INDEX idx_products_stock ON products(stock_quantity);
+CREATE INDEX idx_orders_date ON orders(created_at);
+CREATE INDEX idx_product_reviews_approved ON product_reviews(is_approved);
 INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, total_price) VALUES
 (1, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99),
 (1, 2, 'Brinquedo Interativo Kong', 1, 12.99, 12.99),
 (1, 7, 'Snacks Naturais Cão', 1, 5.99, 5.99),
 (2, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99);
 
--- Insert sample coupons
-INSERT INTO coupons (code, type, value, minimum_amount, usage_limit, valid_until) VALUES
-('WELCOME10', 'percentage', 10.00, 30.00, 100, '2024-12-31 23:59:59'),
-('FRETE50', 'fixed', 5.00, 50.00, NULL, '2024-12-31 23:59:59');
 
 -- Create indexes for better performance
 CREATE INDEX idx_products_price ON products(price);
