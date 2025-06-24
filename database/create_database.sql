@@ -221,11 +221,9 @@ INSERT INTO coupons (code, type, value, minimum_amount, usage_limit, valid_until
 ('WELCOME10', 'percentage', 10.00, 30.00, 100, '2024-12-31 23:59:59'),
 ('FRETE50', 'fixed', 5.00, 50.00, NULL, '2024-12-31 23:59:59');
 
+
+
 -- Create indexes for better performance
-CREATE INDEX idx_products_price ON products(price);
-CREATE INDEX idx_products_stock ON products(stock_quantity);
-CREATE INDEX idx_orders_date ON orders(created_at);
-CREATE INDEX idx_product_reviews_approved ON product_reviews(is_approved);
 INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, total_price) VALUES
 (1, 1, 'Ração Premium Cão Adulto', 1, 29.99, 29.99),
 (1, 2, 'Brinquedo Interativo Kong', 1, 12.99, 12.99),
