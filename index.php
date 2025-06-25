@@ -71,15 +71,43 @@ $animal_categories = $categoryManager->getAnimalCategories();
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count"><?php echo $cart_count; ?></span>
                     </a>
-                    <?php if(isset($_SESSION['user_id'])): ?>
-                        <a href="conta.php" class="tool-icon" title="Minha Conta">
-                            <i class="fas fa-user"></i>
-                        </a>
-                    <?php else: ?>
-                        <a href="login.php" class="tool-icon" title="Entrar">
-                            <i class="fas fa-sign-in-alt"></i>
-                        </a>
-                    <?php endif; ?>
+                    <div class="tool-icon account-menu" id="account-menu-icon">
+                        <i class="far fa-user"></i>
+                        <div class="account-dropdown">
+                            <?php if (isset($_SESSION['user_id'])): ?>
+                                <div class="dropdown-header">
+                                    <p class="user-name"><?php echo htmlspecialchars($_SESSION['user_first_name'] ?? 'Utilizador'); ?></p>
+                                    <p class="user-email"><?php echo htmlspecialchars($_SESSION['user_email'] ?? ''); ?></p>
+                                </div>
+                                <a href="account.php" class="account-dropdown-item">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>A Minha Conta</span>
+                                </a>
+                                <a href="orders.php" class="account-dropdown-item">
+                                    <i class="fas fa-box"></i>
+                                    <span>As Minhas Encomendas</span>
+                                </a>
+                                <a href="wishlist.php" class="account-dropdown-item">
+                                    <i class="fas fa-heart"></i>
+                                    <span>Lista de Desejos</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="logout.php" class="account-dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Terminar Sessão</span>
+                                </a>
+                            <?php else: ?>
+                                <a href="login.php" class="account-dropdown-item">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    <span>Entrar</span>
+                                </a>
+                                <a href="registo.php" class="account-dropdown-item">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Criar Conta</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -183,17 +211,21 @@ $animal_categories = $categoryManager->getAnimalCategories();
     </div>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content fade-in-up">
-                <h1>O Melhor para o Seu Melhor Amigo</h1>
-                <p>Descubra uma seleção premium de produtos para manter o seu animal feliz e saudável.</p>
-                <div class="hero-buttons">
-                    <a href="#produtos" class="btn btn-primary">Ver Produtos</a>
-                    <a href="servicos.php" class="btn btn-secondary">Nossos Serviços</a>
-                </div>
+    <section class="hero-carousel">
+        <div class="carousel-inner">
+            <!-- Slide 1 -->
+            <div class="carousel-slide active" style="background-image:url(./media/index/promo1.png);">
+            </div>
+            <!-- Slide 2 -->
+            <div class="carousel-slide" style="background-image:url(../media/index/hero-wallpaper-2.jpg);">
+            </div>
+            <!-- Slide 3 -->
+            <div class="carousel-slide" style="background-image:url(../media/index/hero-wallpaper-3.jpg);">
             </div>
         </div>
+        <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
+        <div class="carousel-indicators"></div>
     </section>
 
     <!-- Featured Products Section -->
@@ -477,6 +509,43 @@ $animal_categories = $categoryManager->getAnimalCategories();
 
         // Animações ao rolar a página
         document.addEventListener("DOMContentLoaded", function() {
+            // Account dropdown functionality
+            const accountMenuIcon = document.getElementById('account-menu-icon');
+            let accountMenuTimeout;
+            let isClicked = false;
+
+            if (accountMenuIcon) {
+                const showMenu = () => {
+                    clearTimeout(accountMenuTimeout);
+                    accountMenuIcon.classList.add('active');
+                };
+
+                const hideMenu = () => {
+                    if (!isClicked) { // Only hide on mouseleave if not opened by click
+                        accountMenuTimeout = setTimeout(() => {
+                            accountMenuIcon.classList.remove('active');
+                        }, 250);
+                    }
+                };
+
+                accountMenuIcon.addEventListener('mouseenter', showMenu);
+                accountMenuIcon.addEventListener('mouseleave', hideMenu);
+
+                accountMenuIcon.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    const isActive = this.classList.toggle('active');
+                    isClicked = isActive;
+                });
+
+                // Close when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (accountMenuIcon.classList.contains('active') && !accountMenuIcon.contains(event.target)) {
+                        accountMenuIcon.classList.remove('active');
+                        isClicked = false;
+                    }
+                });
+            }
+
             const animatedElements = document.querySelectorAll('.animate-on-scroll');
 
             if ("IntersectionObserver" in window) {
@@ -495,6 +564,91 @@ $animal_categories = $categoryManager->getAnimalCategories();
             } else {
                 // Fallback para browsers antigos: mostra todos os elementos de uma vez
                 animatedElements.forEach(el => el.classList.add('is-visible'));
+            }
+
+            // Carousel functionality
+            const carouselInner = document.querySelector('.carousel-inner');
+            const slides = document.querySelectorAll('.carousel-slide');
+            const prevBtn = document.querySelector('.carousel-control.prev');
+            const nextBtn = document.querySelector('.carousel-control.next');
+            const indicatorsContainer = document.querySelector('.carousel-indicators');
+            
+            if (carouselInner) {
+                const slideCount = slides.length;
+                let currentIndex = 0;
+                let autoPlayInterval;
+
+                // Create indicators
+                for (let i = 0; i < slideCount; i++) {
+                    const indicator = document.createElement('button');
+                    indicator.classList.add('indicator');
+                    indicator.dataset.index = i;
+                    if (i === 0) indicator.classList.add('active');
+                    indicatorsContainer.appendChild(indicator);
+                }
+                const indicators = document.querySelectorAll('.indicator');
+
+                function goToSlide(index) {
+                    if (index < 0) {
+                        index = slideCount - 1;
+                    } else if (index >= slideCount) {
+                        index = 0;
+                    }
+
+                    carouselInner.style.transform = `translateX(-${index * 100}%)`;
+                    
+                    slides.forEach(slide => slide.classList.remove('active'));
+                    slides[index].classList.add('active');
+                    
+                    indicators.forEach(indicator => indicator.classList.remove('active'));
+                    indicators[index].classList.add('active');
+                    
+                    currentIndex = index;
+                }
+
+                function nextSlide() {
+                    goToSlide(currentIndex + 1);
+                }
+
+                function prevSlide() {
+                    goToSlide(currentIndex - 1);
+                }
+
+                function startAutoPlay() {
+                    stopAutoPlay();
+                    autoPlayInterval = setInterval(nextSlide, 5000);
+                }
+
+                function stopAutoPlay() {
+                    clearInterval(autoPlayInterval);
+                }
+
+                nextBtn.addEventListener('click', () => {
+                    nextSlide();
+                    stopAutoPlay();
+                    startAutoPlay();
+                });
+
+                prevBtn.addEventListener('click', () => {
+                    prevSlide();
+                    stopAutoPlay();
+                    startAutoPlay();
+                });
+
+                indicators.forEach(indicator => {
+                    indicator.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.dataset.index, 10);
+                        goToSlide(index);
+                        stopAutoPlay();
+                        startAutoPlay();
+                    });
+                });
+
+                carouselInner.addEventListener('mouseenter', stopAutoPlay);
+                carouselInner.addEventListener('mouseleave', startAutoPlay);
+
+                goToSlide(0);
+                startAutoPlay();
             }
         });
     </script>
