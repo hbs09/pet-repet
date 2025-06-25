@@ -84,7 +84,7 @@ if($_POST) {
         </div>
         <div class="auth-card">
             <div class="auth-panel-promo">
-                <h1 class="auth-logo">Pet & Repet</h1>
+                <a href="index.php" class="auth-logo">Pet & Repet</a>
                 <h2 class="auth-title">O seu pet merece o melhor.</h2>
                 <p class="auth-subtitle">Junte-se a milhares de donos de animais satisfeitos.</p>
             </div>

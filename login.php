@@ -63,7 +63,7 @@ if($_POST) {
         </div>
         <div class="auth-card">
             <div class="auth-panel-promo">
-                <h1 class="auth-logo">Pet & Repet</h1>
+                <a href="index.php" class="auth-logo">Pet & Repet</a>
                 <h2 class="auth-title">Bem-vindo de volta!</h2>
                 <p class="auth-subtitle">Acesse sua conta e continue cuidando do seu pet.</p>
             </div>
