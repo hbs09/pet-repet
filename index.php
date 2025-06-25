@@ -61,7 +61,7 @@ include 'templates/header.php';
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Produtos em Destaque</h2>
-                <p class="section-subtitle">Selecionamos os melhores produtos para o bem-estar do seu animal de estimação</p>
+                
             </div>
             <div class="product-grid">
                 <?php 
@@ -108,7 +108,6 @@ include 'templates/header.php';
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Porquê Escolher-nos?</h2>
-                <p class="section-subtitle">Oferecemos os melhores produtos e serviços para o seu animal de estimação</p>
             </div>
             <div class="features-grid">
                 <div class="feature-item">

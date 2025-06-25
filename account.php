@@ -222,71 +222,50 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                     <!-- Security Tab -->
                     <div id="security" class="tab-content">
                         <div class="tab-header">
-                            <h2>Segurança da Conta</h2>
-                            <p>Gerir as definições de segurança</p>
-                        </div>
-
-                        <!-- Password Section -->
-                        <div class="section-header">
-                            <h3>Alterar Password</h3>
-                        </div>
-
-                        <div class="section-body">
-                            <form id="passwordForm" class="password-form">
-                                <div class="form-group">
-                                    <label>Password Atual</label>
-                                    <div class="input-with-icon">
-                                        <input type="password" name="current_password" required>
-                                        <i class="fas fa-lock"></i>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Nova Password</label>
-                                    <div class="input-with-icon">
-                                        <input type="password" name="new_password" required>
-                                        <i class="fas fa-key"></i>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Confirmar Nova Password</label>
-                                    <div class="input-with-icon">
-                                        <input type="password" name="confirm_password" required>
-                                        <i class="fas fa-check"></i>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i>
-                                    Alterar Password
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Security Info Section -->
-                        <div class="section-header">
-                            <h3>Informações de Segurança</h3>
-                        </div>
-
-                        <div class="section-body">
-                            <div class="security-status">
-                                <div class="status-item">
-                                    <div class="status-icon success">
-                                        <i class="fas fa-check-circle"></i>
-                                    </div>
-                                    <div class="status-info">
-                                        <h4>Email Verificado</h4>
-                                        <p>O seu email está verificado e seguro</p>
-                                    </div>
-                                </div>
-                                <div class="status-item">
-                                    <div class="status-icon info">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
-                                    <div class="status-info">
-                                        <h4>Última Sessão</h4>
-                                        <p>Ativo agora</p>
-                                    </div>
-                                </div>
+                            <div class="tab-header-content">
+                                <h2>Segurança da Conta</h2>
+                                <p>Gerir as definições de segurança</p>
                             </div>
+                            <div class="header-actions">
+                                <button type="button" class="btn-save" id="savePasswordBtn" disabled style="opacity: 0.6;">
+                                    <i class="fas fa-check"></i>
+                                    Confirmar Alteração
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="section-body">
+                            <!-- Password Change Section -->
+                            <div class="info-list">
+                                <!-- Password Change Form (inline style) -->
+
+                                <div class="info-row">
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-key"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Nova Password</span>
+                                            <div class="info-edit">
+                                                <input type="password" name="new_password" class="inline-input" placeholder="Nova password" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Confirmar Password</span>
+                                            <div class="info-edit">
+                                                <input type="password" name="confirm_password" class="inline-input" placeholder="Confirmar nova password" required>
+                                                <div class="password-match-indicator" id="password-match-message" style="display: none;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                       
                         </div>
                     </div>
                 </main>
@@ -657,6 +636,102 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
         padding: 6px 10px;
         height: auto;
         min-height: unset;
+    }
+    
+    /* Estilos para a seção de segurança */
+    .password-display {
+        color: #64748b;
+        font-family: monospace;
+        letter-spacing: 2px;
+    }
+    
+    .password-match-indicator {
+        font-size: 0.8rem;
+        margin-top: 3px;
+        transition: all 0.3s ease;
+        display: none; /* Inicialmente oculto até ser necessário */
+        clear: both;
+        padding: 3px 5px;
+        min-height: 0; /* Prevenir que ocupe espaço quando vazio */
+    }
+    
+    .password-match-indicator.success {
+        color: #27ae60;
+        background-color: rgba(39, 174, 96, 0.1);
+        border-radius: 4px;
+        padding-left: 5px;
+    }
+    
+    .password-match-indicator.error {
+        color: #e74c3c;
+        background-color: rgba(231, 76, 60, 0.1);
+        border-radius: 4px;
+        padding-left: 5px;
+    }
+    
+    .security-info-header {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eaedf0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .security-info-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+        padding-left: 10px;
+        position: relative;
+    }
+    
+    .security-info-header h3::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 16px;
+        background: #3498db;
+        border-radius: 2px;
+    }
+    
+    .security-info-list {
+        padding-top: 5px;
+    }
+    
+    .security-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .security-badge.verified {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+    }
+    
+    .info-icon.success-icon {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+    }
+    
+    .info-icon.info-icon {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+    
+    .info-description {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 3px;
+        display: block;
     }
     
     .inline-actions {
@@ -1328,32 +1403,93 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
             });
         });
         
-        // Password form submission
-        $('#passwordForm').submit(function(e) {
-            e.preventDefault();
+        // Função para validar se as passwords coincidem
+        function validatePasswordMatch() {
             const newPass = $('input[name="new_password"]').val();
             const confirmPass = $('input[name="confirm_password"]').val();
+            const messageEl = $('#password-match-message');
+            const saveBtn = $('#savePasswordBtn');
+            
+            if(newPass && confirmPass) {
+                // Certifique-se de que o elemento é visível quando temos valores para ambas as senhas
+                messageEl.show();
+                
+                if(newPass === confirmPass) {
+                    $('input[name="confirm_password"]').css('border-color', '#27ae60');
+                    $('input[name="new_password"]').css('border-color', '#27ae60');
+                    messageEl.html('<i class="fas fa-check-circle"></i> As passwords coincidem').removeClass('error').addClass('success');
+                    saveBtn.prop('disabled', false).css('opacity', 1);
+                    return true;
+                } else {
+                    $('input[name="confirm_password"]').css('border-color', '#e74c3c');
+                    $('input[name="new_password"]').css('border-color', '');
+                    messageEl.html('<i class="fas fa-exclamation-circle"></i> As passwords não coincidem').removeClass('success').addClass('error');
+                    saveBtn.prop('disabled', true).css('opacity', 0.6);
+                    return false;
+                }
+            } else {
+                // Esconder o elemento quando um dos campos está vazio
+                messageEl.hide().text('');
+                $('input[name="confirm_password"]').css('border-color', '');
+                $('input[name="new_password"]').css('border-color', '');
+                saveBtn.prop('disabled', true).css('opacity', 0.6);
+            }
+            return false;
+        }
+        
+        // Adicionar eventos de validação assim que o documento estiver pronto
+        $('input[name="confirm_password"]').on('keyup', validatePasswordMatch);
+        $('input[name="new_password"]').on('keyup', validatePasswordMatch);
+        
+        // Validar as senhas inicialmente
+        validatePasswordMatch();
+        
+        // Botão de salvar password
+        $('#savePasswordBtn').click(function() {
+            // Validar as passwords antes de enviar
+            const newPass = $('input[name="new_password"]').val();
+            const confirmPass = $('input[name="confirm_password"]').val();
+            
+            if(!newPass || !confirmPass) {
+                showNotification('Por favor, preencha ambos os campos de password', 'error');
+                return;
+            }
             
             if(newPass !== confirmPass) {
                 showNotification('As passwords não coincidem', 'error');
                 return;
             }
             
+            // Enviar diretamente os valores dos campos
             $.ajax({
                 url: 'ajax/change_password.php',
                 method: 'POST',
-                data: $(this).serialize(),
+                data: {
+                    new_password: newPass,
+                    confirm_password: confirmPass
+                },
                 dataType: 'json',
                 success: function(response) {
                     if(response.success) {
                         showNotification('Password alterada com sucesso!', 'success');
-                        $('#passwordForm')[0].reset();
+                        // Limpar os campos de senha após alteração bem-sucedida
+                        $('input[name="new_password"]').val('');
+                        $('input[name="confirm_password"]').val('');
+                        $('input[name="confirm_password"]').css('border-color', '');
+                        $('input[name="new_password"]').css('border-color', '');
+                        $('#password-match-message').text('').removeClass('success').removeClass('error').hide();
+                        $('#savePasswordBtn').prop('disabled', true).css('opacity', 0.6);
                     } else {
                         showNotification(response.message || 'Erro ao alterar password', 'error');
                     }
+                },
+                error: function() {
+                    showNotification('Erro de conexão ao alterar a password', 'error');
                 }
             });
         });
+        
+        // O formulário de password agora é manipulado diretamente pelo botão savePasswordBtn
         
         // Notification system
         function showNotification(message, type) {
