@@ -28,7 +28,7 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <title>A Minha Conta - Pet & Repet</title>
 </head>
 <body>
@@ -164,7 +164,7 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                                                     <span class="info-label">Telefone</span>
                                                     <span class="info-value display-mode"><?php echo htmlspecialchars($user['phone'] ?? 'Não definido'); ?></span>
                                                     <div class="info-edit edit-mode" style="display: none;">
-                                                        <input type="tel" name="phone" class="inline-input phone-input-field" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="Telefone">
+                                                        <input type="tel" name="phone" class="inline-input phone-input-field" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="+351 9xx xxx xxx">
                                                     </div>
                                                 </div>
                                             </div>
@@ -203,7 +203,7 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                                 </div>
                                 <div class="form-group">
                                     <label>Telefone</label>
-                                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="Introduza o seu número de telefone">
+                                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="+351 9xx xxx xxx">
                                 </div>
                                 <div class="form-actions">
                                     <button type="button" class="btn btn-secondary" id="cancelEditBtn">
@@ -246,8 +246,12 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                                         </div>
                                         <div class="info-content">
                                             <span class="info-label">Nova Password</span>
-                                            <div class="info-edit">
-                                                <input type="password" name="new_password" class="inline-input" placeholder="Nova password" required>
+                                            <div class="input-group">
+                                                <i class="input-icon fas fa-lock"></i>
+                                                <input type="password" id="new_password" name="new_password" class="form-input" placeholder="Nova password" required>
+                                                <button type="button" class="password-toggle" onclick="togglePassword('new_password')">
+                                                    <i class="far fa-eye"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -258,10 +262,14 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                                         </div>
                                         <div class="info-content">
                                             <span class="info-label">Confirmar Password</span>
-                                            <div class="info-edit">
-                                                <input type="password" name="confirm_password" class="inline-input" placeholder="Confirmar nova password" required>
-                                                <div class="password-match-indicator" id="password-match-message" style="display: none;"></div>
+                                            <div class="input-group">
+                                                <i class="input-icon fas fa-lock"></i>
+                                                <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Confirmar nova password" required>
+                                                <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">
+                                                    <i class="far fa-eye"></i>
+                                                </button>
                                             </div>
+                                            <div class="password-match-indicator" id="password-match-message" style="display: none;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -274,6 +282,119 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
     </main>
 
     <style>
+    /* Estilo para input de telefone */
+    input[type="tel"] {
+        padding-left: 12px !important;
+        background-image: none !important;
+    }
+    
+    input[type="tel"].error {
+        border-color: #ff3b30 !important;
+    }
+    
+    /* Estilos para input-group e form-input similares ao login */
+    .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .input-group .input-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        font-size: 16px;
+        transition: opacity 0.2s ease-in-out, color 0.2s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 14px 18px 14px 52px;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 16px;
+        height: 52px;
+        transition: all 0.2s ease;
+        background: #f8f9fa;
+        color: #2c3e50;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #3498db;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-input:focus ~ .input-icon {
+        color: #3498db;
+    }
+
+    .form-input::placeholder {
+        color: #adb5bd;
+        font-style: italic;
+    }
+    
+    /* Estilo para o container de password */
+    .password-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Estilos para checkbox de mostrar password */
+    .password-visibility-control {
+        margin-top: 8px;
+        padding: 8px 0;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: #64748b;
+        user-select: none;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #3498db;
+    }
+
+    .checkbox-label {
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+
+    .checkbox-container:hover .checkbox-label {
+        color: #3498db;
+    }
+    
+    /* Ajustando posição do indicador de correspondência de senha */
+    .password-match-indicator {
+        margin-top: 5px;
+        clear: both;
+        width: 100%;
+        font-size: 12px;
+    }
+    
+    .password-match-indicator.success {
+        color: #27ae60;
+    }
+    
+    .password-match-indicator.error {
+        color: #e74c3c;
+    }
+    
     .account-container {
         padding: 160px 0 80px 0;
         min-height: 100vh;
@@ -1304,7 +1425,46 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const toggle = field.parentElement.querySelector('.password-toggle i');
+        if (field.type === 'password') {
+            field.type = 'text';
+            toggle.className = 'far fa-eye-slash';
+        } else {
+            field.type = 'password';
+            toggle.className = 'far fa-eye';
+        }
+    }
+
+    function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = field.parentElement.querySelector('.password-toggle i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                toggle.className = 'far fa-eye-slash';
+            } else {
+                field.type = 'password';
+                toggle.className = 'far fa-eye';
+            }
+        }
+
+
     $(document).ready(function() {
+        // Corrigir o estado inicial do ícone ao carregar a página
+        ['new_password', 'confirm_password'].forEach(function(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = field.parentElement.querySelector('.password-toggle i');
+            if (field && toggle) {
+                if (field.type === 'text') {
+                    toggle.className = 'far fa-eye-slash';
+                } else {
+                    toggle.className = 'far fa-eye';
+                }
+            }
+        });
+        
         // Tab navigation
         $('.nav-tab:not(.external):not(.logout)').click(function(e) {
             e.preventDefault();
@@ -1384,14 +1544,7 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                     const phoneInput = $('input[name="phone"]');
                     phoneInput.val(currentPhone);
                     
-                    // Se tivermos intlTelInput ativo, tentar atualizar seu valor
-                    if (window.iti) {
-                        try {
-                            window.iti.setNumber(currentPhone);
-                        } catch (e) {
-                            console.warn('Não foi possível atualizar o intlTelInput:', e);
-                        }
-                    }
+                    // Não é mais necessário atualizar o plugin, o input é simples agora
                 }
             }
         }
@@ -1422,14 +1575,9 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                         // Obter o número de telefone formatado do campo de telefone
                         let phone;
                         const phoneInput = $('input[name="phone"]');
-                        if (window.iti && phoneInput.val() && phoneInput.val().trim()) {
-                            // Se temos o plugin intlTelInput ativo, usamos seu método getNumber()
-                            try {
-                                phone = window.iti.getNumber();
-                            } catch(e) {
-                                console.warn('Não foi possível obter o número formatado:', e);
-                                phone = phoneInput.val();
-                            }
+                        if (phoneInput.val() && phoneInput.val().trim()) {
+                            // O número já está formatado corretamente no input
+                            phone = phoneInput.val();
                         } else if (phoneInput.val() && phoneInput.val().trim()) {
                             phone = phoneInput.val();
                         } else {
@@ -1627,143 +1775,154 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
     });
     </script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar o intl-tel-input para o campo de telefone
-        const phoneInputField = document.querySelector("input[name='phone']");
-        let iti;
-        
-        if (phoneInputField) {
-            iti = window.intlTelInput(phoneInputField, {
-                initialCountry: "pt", // Definir Portugal como país padrão
-                separateDialCode: false, // Não separar o código - será parte do input
-                nationalMode: false, // Show dial code in the input
-                autoPlaceholder: "off", // Desligar o placeholder automático para usar nosso formato personalizado
-                customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
-                    // Para Portugal, usar nosso formato personalizado
-                    if (selectedCountryData.iso2 === 'pt') {
-                        return "+351 9xx xxx xxx";
-                    }
-                    return selectedCountryPlaceholder;
-                },
-                placeholderNumberType: "MOBILE", // Show mobile number placeholder 
-                preferredCountries: ['pt', 'br', 'es', 'fr', 'de', 'gb'], // Países preferidos no topo
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simplificação do input de telefone para formato português fixo
+            const phoneInputFields = document.querySelectorAll("input[name='phone']");
+            
+            phoneInputFields.forEach(phoneInputField => {
+                if (phoneInputField) {
+                    // Ajustar o CSS para remover o padding extra que era usado para a bandeira
+                    phoneInputField.style.paddingLeft = '12px';
 
-            // Disponibilizar globalmente para acesso por outras funções
-            window.iti = iti;
-
-            // Esperar pelo carregamento do plugin e scripts utils
-            iti.promise.then(function() {
-                
-                // Set initial value with dial code for Portugal
-                if (phoneInputField.value.trim() === '') {
-                    const countryData = iti.getSelectedCountryData();
-                    const dialCode = '+' + countryData.dialCode;
-                    phoneInputField.value = dialCode + ' ';
+                    // Definir o placeholder
+                    phoneInputField.setAttribute('placeholder', '+351 9xx xxx xxx');
                     
-                    // Definir o placeholder customizado
-                    if (countryData.iso2 === 'pt') {
-                        phoneInputField.setAttribute('placeholder', '+351 9xx xxx xxx');
-                    }
-                }
-
-                // Listener for blur to validate
-                phoneInputField.addEventListener('blur', function() {
-                    this.classList.remove('error');
-                    const dialCode = '+' + iti.getSelectedCountryData().dialCode;
-                    // Only validate if the user has entered some digits beyond the dial code
-                    if (iti.getNumber().length > dialCode.length && !iti.isValidNumber()) {
-                        this.classList.add('error');
-                    }
-                });
-
-                // Listener para quando o usuário muda o país
-                phoneInputField.addEventListener("countrychange", function() {
-                    // Atualizar o prefixo do país no valor do input
-                    const selectedCountryData = iti.getSelectedCountryData();
-                    const dialCode = '+' + selectedCountryData.dialCode;
-                    
-                    // Se o input estiver vazio ou tiver apenas o código antigo, inserir novo código
-                    if (!phoneInputField.value || phoneInputField.value.trim() === '' || 
-                        phoneInputField.value.match(/^\+\d+$/)) {
-                        phoneInputField.value = dialCode + ' ';
-                    }
-                });
-
-                // Listener para formatar o número durante a digitação
-                phoneInputField.addEventListener('input', function(e) {
-                    const target = e.target;
-                    const currentText = target.value;
-                    const countryData = iti.getSelectedCountryData();
-                    const dialCode = '+' + countryData.dialCode;
-                    
-                    // Se o usuário estiver tentando apagar o código do país, impedir
-                    if (!currentText.includes('+')) {
-                        target.value = dialCode + ' ';
-                        return;
-                    }
-
-                    // Apply Portugal-specific formatting
-                    if (countryData.iso2 === 'pt') {
-                        // Extrair apenas os números após o código do país
-                        const rawInput = currentText.replace(/\D/g, '');
-                        const countryCode = countryData.dialCode;
-                        
-                        // Remover o código do país dos dígitos (se estiver presente)
-                        let phoneDigits = '';
-                        if (rawInput.startsWith(countryCode)) {
-                            phoneDigits = rawInput.substring(countryCode.length);
-                        } else {
-                            phoneDigits = rawInput;
-                        }
-                        
-                        // Limitar a exatamente 9 dígitos para números portugueses
-                        phoneDigits = phoneDigits.substring(0, 9);
-                        
-                        // Formatar com espaços a cada 3 dígitos (formato: 963 963 963)
+                    // Inicializar com o prefixo português se estiver vazio
+                    if (!phoneInputField.value || phoneInputField.value.trim() === '') {
+                        phoneInputField.value = '+351 ';
+                    } else if (!phoneInputField.value.startsWith('+351')) {
+                        // Se já existir um valor mas não começa com +351, adicionar o prefixo
+                        // Extrair apenas números do valor existente
+                        const onlyNumbers = phoneInputField.value.replace(/\D/g, '');
+                        // Limitar a 9 dígitos
+                        const limitedNumbers = onlyNumbers.substring(0, 9);
+                        // Formatar com espaços a cada 3 dígitos
                         let formattedNumber = '';
-                        for (let i = 0; i < phoneDigits.length; i++) {
+                        for (let i = 0; i < limitedNumbers.length; i++) {
                             if (i > 0 && i % 3 === 0) {
                                 formattedNumber += ' ';
                             }
-                            formattedNumber += phoneDigits[i];
+                            formattedNumber += limitedNumbers[i];
+                        }
+                        // Definir valor com prefixo português
+                        phoneInputField.value = '+351 ' + formattedNumber;
+                    }
+
+                    // Listener para validar ao perder o foco
+                    phoneInputField.addEventListener('blur', function() {
+                        this.classList.remove('error');
+                        
+                        // Verificar se o valor atual começa com o prefixo português
+                        if (!this.value.startsWith('+351')) {
+                            this.value = '+351 ';
+                            return;
                         }
                         
-                        // Construir o valor final com código do país
-                        const newValue = dialCode + ' ' + formattedNumber;
+                        // Verificar se há conteúdo além do prefixo
+                        const contentAfterPrefix = this.value.substring(5).trim().replace(/\D/g, '');
                         
-                        // Atualizar o valor do input se for diferente
-                        if (target.value !== newValue) {
-                            target.value = newValue;
-                            
-                            // Posicionar o cursor no final do input se estiver ativamente digitando
-                            if (document.activeElement === target) {
-                                const end = target.value.length;
-                                target.setSelectionRange(end, end);
+                        // Validar se o número tem 9 dígitos
+                        if (contentAfterPrefix.length > 0 && contentAfterPrefix.length !== 9) {
+                            this.classList.add('error');
+                            if (typeof showNotification === 'function') {
+                                showNotification('O número de telefone português deve ter 9 dígitos.', 'error');
                             }
                         }
+                        
+                        // Garantir que há um espaço após o prefixo
+                        if (contentAfterPrefix.length === 0 && this.value !== '+351 ') {
+                            this.value = '+351 ';
+                        }
+                    });
+
+                    // Listener para formatar o número durante a digitação
+                    phoneInputField.addEventListener('input', function(e) {
+                        const target = e.target;
+                        const currentText = target.value;
+                        
+                        // Verificar se o input atual contém o prefixo português
+                        if (!currentText.startsWith('+351')) {
+                            // Restaurar para o prefixo + espaço
+                            target.value = '+351 ';
+                            return;
+                        }
+                        
+                        // Extrair apenas os números após o prefixo
+                        let afterPrefix = currentText.substring(5).trim();
+                        
+                        // Remover qualquer caractere não numérico
+                        afterPrefix = afterPrefix.replace(/\D/g, '');
+                        
+                        // Limitar a 9 dígitos para números portugueses
+                        afterPrefix = afterPrefix.substring(0, 9);
+                        
+                        // Formatar com espaços a cada 3 dígitos (formato: 963 963 963)
+                        let formattedNumber = '';
+                        for (let i = 0; i < afterPrefix.length; i++) {
+                            if (i > 0 && i % 3 === 0) {
+                                formattedNumber += ' ';
+                            }
+                            formattedNumber += afterPrefix[i];
+                        }
+                        
+                        // Construir o valor final com prefixo português
+                        const newValue = '+351 ' + formattedNumber;
+                        target.value = newValue;
+                        
+                        // Posicionar o cursor no final do input
+                        const end = target.value.length;
+                        target.setSelectionRange(end, end);
+                    });
+                    
+                    // Validar o formulário no envio
+                    const inlineForm = document.getElementById('inlineProfileForm');
+                    if (inlineForm) {
+                        inlineForm.addEventListener('submit', function(e) {
+                            if (phoneInputField.value.trim()) {
+                                // Extrair apenas os números após o prefixo para validação
+                                const digitsAfterPrefix = phoneInputField.value.substring(5).replace(/\D/g, '');
+                                
+                                // Validar se tem 9 dígitos
+                                if (digitsAfterPrefix.length !== 9) {
+                                    e.preventDefault(); // Impedir envio do formulário
+                                    phoneInputField.classList.add('error');
+                                    if (typeof showNotification === 'function') {
+                                        showNotification('O número de telefone português deve ter 9 dígitos.', 'error');
+                                    }
+                                    return false;
+                                }
+                                
+                                // Manter o número formatado como +351 XXX XXX XXX
+                                // (Não precisamos fazer nada aqui, pois o formato já está correto)
+                            }
+                        });
                     }
-                });
-            });
-            
-            // Atualizar o manipulador de eventos de submit no formulário de perfil
-            $('#inlineProfileForm').on('submit', function(e) {
-                if (iti && phoneInputField.value.trim()) {
-                    if (!iti.isValidNumber()) {
-                        e.preventDefault(); // Impedir envio do formulário
-                        phoneInputField.classList.add('error');
-                        showNotification('Número de telemóvel inválido.', 'error');
-                        return false;
+                    
+                    // Fazer a mesma validação para o formulário principal
+                    const profileForm = document.getElementById('profileForm');
+                    if (profileForm) {
+                        profileForm.addEventListener('submit', function(e) {
+                            const phoneField = this.querySelector('input[name="phone"]');
+                            if (phoneField && phoneField.value.trim()) {
+                                // Extrair apenas os números após o prefixo para validação
+                                const digitsAfterPrefix = phoneField.value.substring(5).replace(/\D/g, '');
+                                
+                                // Validar se tem 9 dígitos
+                                if (digitsAfterPrefix.length !== 9) {
+                                    e.preventDefault(); // Impedir envio do formulário
+                                    phoneField.classList.add('error');
+                                    if (typeof showNotification === 'function') {
+                                        showNotification('O número de telefone português deve ter 9 dígitos.', 'error');
+                                    }
+                                    return false;
+                                }
+                            }
+                        });
                     }
-                    // Atualizar o valor do input de telefone para o número internacional completo
-                    phoneInputField.value = iti.getNumber();
                 }
             });
-        }
-    });
+        });
     </script>
 
 </body>
