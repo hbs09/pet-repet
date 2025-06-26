@@ -42,13 +42,13 @@ include 'templates/header.php';
     <section class="hero-carousel">
         <div class="carousel-inner">
             <!-- Slide 1 -->
-            <div class="carousel-slide active" style="background-image:url(./media/index/hero1.jpg);">
+            <div class="carousel-slide active" style="background-image:url();">
             </div>
             <!-- Slide 2 -->
-            <div class="carousel-slide" style="background-image:url(./media/index/hero2.jpg);">
+            <div class="carousel-slide" style="background-image:url();">
             </div>
             <!-- Slide 3 -->
-            <div class="carousel-slide" style="background-image:url(../media/index/hero-wallpaper-3.jpg);">
+            <div class="carousel-slide" style="background-image:url();">
             </div>
         </div>
         <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
