@@ -101,7 +101,7 @@ if($_POST) {
                             <div class="input-group">
                                 <i class="input-icon fas fa-user"></i>
                                 <input type="text" id="first_name" name="first_name" class="form-input" 
-                                       placeholder="Seu nome" required 
+                                       required 
                                        value="<?php echo isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : ''; ?>">
                             </div>
                         </div>
@@ -111,7 +111,7 @@ if($_POST) {
                             <div class="input-group">
                                 <i class="input-icon fas fa-user"></i>
                                 <input type="text" id="last_name" name="last_name" class="form-input" 
-                                       placeholder="Seu apelido" required 
+                                        required 
                                        value="<?php echo isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : ''; ?>">
                             </div>
                         </div>
@@ -123,7 +123,7 @@ if($_POST) {
                             <div class="input-group">
                                 <i class="input-icon fas fa-envelope"></i>
                                 <input type="email" id="email" name="email" class="form-input" 
-                                       placeholder="exemplo@email.com" required 
+                                       required 
                                        value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
                             </div>
                         </div>
@@ -143,7 +143,7 @@ if($_POST) {
                             <div class="input-group">
                                 <i class="input-icon fas fa-lock"></i>
                                 <input type="password" id="password" name="password" class="form-input" 
-                                       placeholder="Mínimo 6 caracteres" required>
+                                        required>
                                 <button type="button" class="password-toggle" onclick="togglePassword('password')">
                                     <i class="far fa-eye"></i>
                                 </button>
@@ -155,7 +155,7 @@ if($_POST) {
                             <div class="input-group">
                                 <i class="input-icon fas fa-lock"></i>
                                 <input type="password" id="confirm_password" name="confirm_password" class="form-input" 
-                                       placeholder="Repita a password" required>
+                                      required>
                                 <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">
                                     <i class="far fa-eye"></i>
                                 </button>
@@ -164,7 +164,7 @@ if($_POST) {
                     </div>
 
                     <button type="submit" class="auth-button" id="submitBtn">
-                        <span>Criar Conta Gratuita</span>
+                        <span>Criar Conta</span>
                     </button>
                 </form>
 
@@ -228,11 +228,33 @@ if($_POST) {
         // Enhanced form validation
         const inputs = document.querySelectorAll('.form-input');
         inputs.forEach(input => {
+            const inputGroup = input.closest('.input-group');
+            const icon = inputGroup ? inputGroup.querySelector('.input-icon') : null;
+            
+            // Verificar estado inicial
+            if (icon && input.value.trim() !== '') {
+                icon.style.opacity = '0';
+            }
+            
+            // Esconder ícone quando o input recebe foco
+            input.addEventListener('focus', function() {
+                if (icon) {
+                    icon.style.opacity = '0';
+                    icon.style.transition = 'opacity 0.2s ease';
+                }
+            });
+            
             input.addEventListener('blur', function() {
                 if (this.hasAttribute('required') && this.value.trim() === '') {
                     this.classList.add('error');
                 } else {
                     this.classList.remove('error');
+                }
+                
+                // Mostrar o ícone novamente se o campo estiver vazio após perder o foco
+                if (icon) {
+                    icon.style.opacity = this.value.trim() === '' ? '1' : '0';
+                    icon.style.transition = 'opacity 0.2s ease';
                 }
             });
 
@@ -240,8 +262,35 @@ if($_POST) {
                 if (this.classList.contains('error') && this.value.trim() !== '') {
                     this.classList.remove('error');
                 }
+                
+                // Manter o ícone oculto enquanto digita
+                if (icon) {
+                    icon.style.opacity = '0';
+                    icon.style.transition = 'opacity 0.2s ease';
+                }
             });
         });                                                                    
+
+
+        // Adicionar evento para corrigir o layout após a página ser carregada completamente
+        window.addEventListener('load', function() {
+            // Adicionar classe para marcar entrada de telefone
+            if (document.querySelector('.phone-input-field')) {
+                document.querySelector('.phone-input-field').classList.add('with-flag');
+            }
+            
+            // Corrigir layout dos inputs
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.style.boxSizing = 'border-box';
+            });
+            
+            // Corrigir a altura do container telefone
+            if (document.querySelector('.iti')) {
+                document.querySelector('.iti').style.height = '52px';
+                // Removido o script de posicionamento manual do dropdown
+                // Deixando o posicionamento natural do plugin intlTelInput
+            }
+        });
 
         // Add animated class to form groups on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -251,25 +300,68 @@ if($_POST) {
                     group.classList.add('animated');
                 }, index * 100);
             });
+            
+            // Verificar inputs preenchidos ao carregar a página
+            document.querySelectorAll('.form-input').forEach(input => {
+                const inputGroup = input.closest('.input-group');
+                const icon = inputGroup ? inputGroup.querySelector('.input-icon') : null;
+                if (icon && input.value && input.value.trim() !== '') {
+                    icon.style.opacity = '0';
+                }
+            });
 
             // Initialize intl-tel-input
             const phoneInputField = document.querySelector("#phone");
             let iti;
             if (phoneInputField) {
+                // Garantir que qualquer classe anterior do intlTelInput seja removida
+                if (phoneInputField.parentElement.classList.contains('iti')) {
+                    phoneInputField.parentElement.classList.remove('iti');
+                }
+                
+                // Remover qualquer instância anterior do plugin
+                try {
+                    if (window.iti) {
+                        window.iti.destroy();
+                    }
+                } catch (e) {
+                    console.log('Nenhuma instância anterior para destruir');
+                }
+                
+                // Inicializar o intlTelInput com configurações simplificadas
                 iti = window.intlTelInput(phoneInputField, {
                     initialCountry: "pt", // Set default country to Portugal
-                    dropdownContainer: document.body, // Fix for dropdown visibility
+                    separateDialCode: false, // Não separar o código - será parte do input
                     nationalMode: false, // Show dial code in the input
-                    placeholderNumberType: "MOBILE", // Show mobile number placeholder
-                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    autoPlaceholder: "off", // Desligar o placeholder automático para usar nosso formato personalizado
+                    customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                        // Para Portugal, usar nosso formato personalizado
+                        if (selectedCountryData.iso2 === 'pt') {
+                            return "+351 9xx xxx xxx";
+                        }
+                        return selectedCountryPlaceholder;
+                    },
+                    placeholderNumberType: "MOBILE", // Show mobile number placeholder 
+                    preferredCountries: ['pt', 'br', 'es', 'fr', 'de', 'gb'], // Países preferidos no topo
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
                 });
 
                 // Wait for the plugin and utils script to be ready
                 iti.promise.then(function() {
-                    // Set initial value with dial code
+                    // Set initial value with dial code for Portugal
                     if (phoneInputField.value.trim() === '') {
-                        phoneInputField.value = '+' + iti.getSelectedCountryData().dialCode + ' ';
+                        const countryData = iti.getSelectedCountryData();
+                        const dialCode = '+' + countryData.dialCode;
+                        phoneInputField.value = dialCode + ' ';
+                        
+                        // Definir o placeholder customizado
+                        if (countryData.iso2 === 'pt') {
+                            phoneInputField.setAttribute('placeholder', '+351 9xx xxx xxx');
+                        }
                     }
+                    // Usando apenas o comportamento padrão do plugin
+                    // Código de manipulação manual do dropdown removido
+                    // Deixando o comportamento natural do plugin intlTelInput
 
                     // Listener for blur to validate
                     phoneInputField.addEventListener('blur', function() {
@@ -281,41 +373,70 @@ if($_POST) {
                         }
                     });
 
-                    // Listener for when the user changes the country
+                    // Listener para quando o usuário muda o país
                     phoneInputField.addEventListener("countrychange", function() {
-                        phoneInputField.value = '+' + iti.getSelectedCountryData().dialCode + ' ';
+                        // Atualizar o prefixo do país no valor do input
+                        const selectedCountryData = iti.getSelectedCountryData();
+                        const dialCode = '+' + selectedCountryData.dialCode;
+                        
+                        // Se o input estiver vazio ou tiver apenas o código antigo, inserir novo código
+                        if (!phoneInputField.value || phoneInputField.value.trim() === '' || 
+                            phoneInputField.value.match(/^\+\d+$/)) {
+                            phoneInputField.value = dialCode + ' ';
+                        }
                     });
 
-                    // Listener for input to format the number
+                    // Listener para formatar o número durante a digitação
                     phoneInputField.addEventListener('input', function(e) {
                         const target = e.target;
+                        const currentText = target.value;
                         const countryData = iti.getSelectedCountryData();
                         const dialCode = '+' + countryData.dialCode;
-                        let value = target.value;
-
-                        // Prevent deleting the dial code
-                        if (!value.startsWith(dialCode + ' ')) {
+                        
+                        // Se o usuário estiver tentando apagar o código do país, impedir
+                        if (!currentText.includes('+')) {
                             target.value = dialCode + ' ';
                             return;
                         }
 
                         // Apply Portugal-specific formatting
                         if (countryData.iso2 === 'pt') {
-                            // Get the part after dial code and remove all non-digits
-                            let numberPart = value.substring(dialCode.length + 1).replace(/\D/g, '');
+                            // Extrair apenas os números após o código do país
+                            const rawInput = currentText.replace(/\D/g, '');
+                            const countryCode = countryData.dialCode;
                             
-                            // Limit to 9 digits for Portugal mobile
-                            numberPart = numberPart.substring(0, 9);
-
-                            // Format with a space every 3 digits
-                            const formattedNumberPart = numberPart.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+                            // Remover o código do país dos dígitos (se estiver presente)
+                            let phoneDigits = '';
+                            if (rawInput.startsWith(countryCode)) {
+                                phoneDigits = rawInput.substring(countryCode.length);
+                            } else {
+                                phoneDigits = rawInput;
+                            }
                             
-                            // Construct the new value
-                            const newValue = dialCode + ' ' + formattedNumberPart;
+                            // Limitar a exatamente 9 dígitos para números portugueses
+                            phoneDigits = phoneDigits.substring(0, 9);
                             
-                            // Update the input value.
+                            // Formatar com espaços a cada 3 dígitos (formato: 963 963 963)
+                            let formattedNumber = '';
+                            for (let i = 0; i < phoneDigits.length; i++) {
+                                if (i > 0 && i % 3 === 0) {
+                                    formattedNumber += ' ';
+                                }
+                                formattedNumber += phoneDigits[i];
+                            }
+                            
+                            // Construir o valor final com código do país
+                            const newValue = dialCode + ' ' + formattedNumber;
+                            
+                            // Atualizar o valor do input se for diferente
                             if (target.value !== newValue) {
-                               target.value = newValue;
+                                target.value = newValue;
+                                
+                                // Posicionar o cursor no final do input se estiver ativamente digitando
+                                if (document.activeElement === target) {
+                                    const end = target.value.length;
+                                    target.setSelectionRange(end, end);
+                                }
                             }
                         }
                     });
@@ -362,6 +483,56 @@ if($_POST) {
                     }
                 }).showToast();
             <?php endif; ?>
+        });
+    </script>
+
+    <!-- Script direto para corrigir a posição do dropdown -->
+    <script>
+        // Correção para o posicionamento do dropdown do intlTelInput
+        document.addEventListener('DOMContentLoaded', function() {
+            // Função para corrigir posição do dropdown
+            function fixIntlDropdown() {
+                // Remover qualquer dropdown antigo que possa estar mal posicionado
+                const oldDropdowns = document.querySelectorAll('body > .iti__country-list');
+                oldDropdowns.forEach(dropdown => {
+                    dropdown.remove();
+                });
+                
+                // Adicionar evento de clique à bandeira
+                const flagContainer = document.querySelector('.iti__flag-container');
+                if (flagContainer) {
+                    flagContainer.addEventListener('click', function(e) {
+                        setTimeout(function() {
+                            const dropdown = document.querySelector('body > .iti__country-list');
+                            if (!dropdown) return;
+                            
+                            const phoneInput = document.getElementById('phone');
+                            if (!phoneInput) return;
+                            
+                            const rect = phoneInput.getBoundingClientRect();
+                            
+                            // Aplicar posicionamento direto
+                            Object.assign(dropdown.style, {
+                                position: 'absolute',
+                                top: (rect.bottom + window.scrollY) + 'px',
+                                left: rect.left + 'px',
+                                width: rect.width + 'px',
+                                zIndex: '99999',
+                                visibility: 'visible',
+                                display: 'block',
+                                maxHeight: '200px',
+                                overflowY: 'auto'
+                            });
+                        }, 10);
+                    });
+                }
+            }
+            
+            // Executar quando o DOM estiver pronto
+            fixIntlDropdown();
+            
+            // Também executar quando a janela terminar de carregar
+            window.addEventListener('load', fixIntlDropdown);
         });
     </script>
 </body>

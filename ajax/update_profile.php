@@ -31,6 +31,12 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
+// Validação do telefone - não deve estar vazio
+if (empty($phone)) {
+    echo json_encode(['success' => false, 'message' => 'O número de telefone não pode estar vazio']);
+    exit;
+}
+
 try {
     // Conectar ao banco de dados
     $database = new Database();

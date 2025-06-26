@@ -79,17 +79,17 @@ if($_POST) {
                         <div class="input-group">
                             <i class="input-icon fas fa-envelope"></i>
                             <input type="email" id="email" name="email" class="form-input" 
-                                   placeholder="exemplo@email.com" required 
+                                   required 
                                    value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="password" class="form-label">Password *</label>
+                        <label for="password" class="form-label">Password*</label>
                         <div class="input-group">
                             <i class="input-icon fas fa-lock"></i>
                             <input type="password" id="password" name="password" class="form-input" 
-                                   placeholder="Sua password" required>
+                                   required>
                             <button type="button" class="password-toggle" onclick="togglePassword('password')">
                                 <i class="far fa-eye"></i>
                             </button>
@@ -143,17 +143,45 @@ if($_POST) {
         // Enhanced form validation
         const inputs = document.querySelectorAll('.form-input');
         inputs.forEach(input => {
+            const inputGroup = input.closest('.input-group');
+            const icon = inputGroup ? inputGroup.querySelector('.input-icon') : null;
+            
+            // Verificar estado inicial
+            if (icon && input.value.trim() !== '') {
+                icon.style.opacity = '0';
+            }
+            
+            // Esconder ícone quando o input recebe foco
+            input.addEventListener('focus', function() {
+                if (icon) {
+                    icon.style.opacity = '0';
+                    icon.style.transition = 'opacity 0.2s ease';
+                }
+            });
+            
             input.addEventListener('blur', function() {
                 if (this.hasAttribute('required') && this.value.trim() === '') {
                     this.classList.add('error');
                 } else {
                     this.classList.remove('error');
                 }
+                
+                // Mostrar o ícone novamente se o campo estiver vazio após perder o foco
+                if (icon) {
+                    icon.style.opacity = this.value.trim() === '' ? '1' : '0';
+                    icon.style.transition = 'opacity 0.2s ease';
+                }
             });
 
             input.addEventListener('input', function() {
                 if (this.classList.contains('error') && this.value.trim() !== '') {
                     this.classList.remove('error');
+                }
+                
+                // Manter o ícone oculto enquanto digita
+                if (icon) {
+                    icon.style.opacity = '0';
+                    icon.style.transition = 'opacity 0.2s ease';
                 }
             });
         });
@@ -170,6 +198,15 @@ if($_POST) {
                 setTimeout(() => {
                     group.classList.add('animated');
                 }, index * 100);
+            });
+            
+            // Verificar inputs preenchidos ao carregar a página
+            document.querySelectorAll('.form-input').forEach(input => {
+                const inputGroup = input.closest('.input-group');
+                const icon = inputGroup ? inputGroup.querySelector('.input-icon') : null;
+                if (icon && input.value && input.value.trim() !== '') {
+                    icon.style.opacity = '0';
+                }
             });
 
             <?php if(isset($_SESSION['success_message'])): ?>
@@ -197,6 +234,24 @@ if($_POST) {
                     }
                 }).showToast();
             <?php endif; ?>
+        });
+
+        // Adicionar evento para corrigir o layout após a página ser carregada completamente
+        window.addEventListener('load', function() {
+            // Corrigir layout dos inputs
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.style.boxSizing = 'border-box';
+            });
+            
+            // Verificar elementos de formulário
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.add('animated');
+            });
+            
+            // Corrigir posição de ícones
+            document.querySelectorAll('.input-icon').forEach(icon => {
+                icon.style.zIndex = '1';
+            });
         });
     </script>
 </body>

@@ -24,11 +24,11 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./scr/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
     <title>A Minha Conta - Pet & Repet</title>
 </head>
 <body>
@@ -164,7 +164,7 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                                                     <span class="info-label">Telefone</span>
                                                     <span class="info-value display-mode"><?php echo htmlspecialchars($user['phone'] ?? 'Não definido'); ?></span>
                                                     <div class="info-edit edit-mode" style="display: none;">
-                                                        <input type="tel" name="phone" class="inline-input" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="Telefone">
+                                                        <input type="tel" name="phone" class="inline-input phone-input-field" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="Telefone">
                                                     </div>
                                                 </div>
                                             </div>
@@ -618,6 +618,24 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
         box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
         outline: none;
         background: #ffffff;
+    }
+    
+    /* Estilos específicos para o campo de telefone */
+    .iti {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .iti__flag-container {
+        z-index: 10;
+    }
+    
+    input[name="phone"] {
+        padding-left: 90px !important;
+    }
+    
+    input[name="phone"].error {
+        border-color: #e74c3c;
     }
     
     .info-edit input + input:not(.name-input) {
@@ -1327,7 +1345,12 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
         }
         
         // Função para sair do modo de edição
-        function exitEditMode() {
+        function exitEditMode(skipReset = false) {
+            // Obter os valores atuais de exibição para uso posterior
+            const currentName = $('.info-item:contains("Nome") .info-value').text().trim();
+            const currentEmail = $('.info-item:contains("Email") .info-value').text().trim();
+            const currentPhone = $('.info-item:contains("Telefone") .info-value').text().trim();
+            
             $('.display-mode').show();
             $('.edit-mode').hide();
             $('#saveProfileBtn').hide();
@@ -1335,8 +1358,42 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
             $('#editProfileBtn').removeClass('cancel-mode');
             $('.personal-info').removeClass('edit-active');
             
-            // Reset dos valores dos inputs para os valores originais
-            $('#inlineProfileForm')[0].reset();
+            // Reset dos valores dos inputs para os valores originais, a menos que skipReset seja true
+            if (!skipReset) {
+                // Resetar o formulário, mas não perder valores que foram atualizados via Ajax
+                const form = $('#inlineProfileForm')[0];
+                form.reset();
+                
+                // Se tivermos valores que foram atualizados (exibição), atualizamos os inputs também
+                if (currentName && currentName !== 'Não definido') {
+                    const nameParts = currentName.split(' ');
+                    if (nameParts.length >= 2) {
+                        const firstName = nameParts[0];
+                        const lastName = nameParts.slice(1).join(' ');
+                        $('input[name="first_name"]').val(firstName);
+                        $('input[name="last_name"]').val(lastName);
+                    }
+                }
+                
+                if (currentEmail && currentEmail !== 'Não definido') {
+                    $('input[name="email"]').val(currentEmail);
+                }
+                
+                if (currentPhone && currentPhone !== 'Não definido') {
+                    // Atualizar o valor do telefone para o mais recente
+                    const phoneInput = $('input[name="phone"]');
+                    phoneInput.val(currentPhone);
+                    
+                    // Se tivermos intlTelInput ativo, tentar atualizar seu valor
+                    if (window.iti) {
+                        try {
+                            window.iti.setNumber(currentPhone);
+                        } catch (e) {
+                            console.warn('Não foi possível atualizar o intlTelInput:', e);
+                        }
+                    }
+                }
+            }
         }
         
         // Botão de salvar na barra superior
@@ -1361,7 +1418,18 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                         const firstName = $('input[name="first_name"]').val();
                         const lastName = $('input[name="last_name"]').val();
                         const email = $('input[name="email"]').val();
-                        const phone = $('input[name="phone"]').val() || 'Não definido';
+                        
+                        // Obter o número de telefone formatado do campo de telefone
+                        // Se usamos intlTelInput, pegamos o número formatado, senão usamos o valor do input
+                        let phone;
+                        const phoneInput = $('input[name="phone"]');
+                        if (phoneInput.data('formatted-number')) {
+                            phone = phoneInput.data('formatted-number');
+                        } else if (phoneInput.val() && phoneInput.val().trim()) {
+                            phone = phoneInput.val();
+                        } else {
+                            phone = 'Não definido';
+                        }
                         
                         // Atualizar os valores exibidos
                         $('.info-item:contains("Nome") .info-value').text(firstName + ' ' + lastName);
@@ -1551,6 +1619,163 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
         equalizeContentHeight();
         $(window).on('resize', equalizeContentHeight);
         $(window).on('load', equalizeContentHeight);
+    });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar o intl-tel-input para o campo de telefone
+        const phoneInputField = document.querySelector("input[name='phone']");
+        let iti;
+        
+        if (phoneInputField) {
+            iti = window.intlTelInput(phoneInputField, {
+                initialCountry: "pt", // Definir Portugal como país padrão
+                separateDialCode: true, // Separar o código para ficar ao lado da bandeira
+                dropdownContainer: document.body, // Corrige problemas de visibilidade do dropdown
+                nationalMode: false, // Mostrar código do país no input
+                placeholderNumberType: "MOBILE", // Mostrar placeholder para número móvel
+                customContainer: "iti", // Container consistente
+                autoPlaceholder: "aggressive", // Mostrar placeholder mesmo com código de país
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            });
+
+            // Disponibilizar globalmente para acesso por outras funções
+            window.iti = iti;
+
+            // Esperar pelo carregamento do plugin e scripts utils
+            iti.promise.then(function() {
+                // Função para ajustar a posição do dropdown quando ele aparecer
+                function adjustDropdownPosition() {
+                    const countryList = document.querySelector('body > .iti__country-list');
+                    if (countryList) {
+                        const phoneInput = document.querySelector("input[name='phone']");
+                        const phoneRect = phoneInput.getBoundingClientRect();
+                        
+                        // Posicionar o dropdown logo abaixo do input
+                        countryList.style.top = (phoneRect.bottom + window.scrollY) + 'px';
+                        countryList.style.left = phoneRect.left + 'px';
+                        countryList.style.width = phoneRect.width + 'px';
+                    }
+                }
+                
+                // Observer para detectar quando o dropdown é adicionado ao DOM
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                            for (let node of mutation.addedNodes) {
+                                if (node.classList && node.classList.contains('iti__country-list')) {
+                                    adjustDropdownPosition();
+                                }
+                            }
+                        }
+                    });
+                });
+                
+                // Iniciar observação do body para detectar adição do dropdown
+                observer.observe(document.body, { childList: true, subtree: false });
+                
+                // Também ajustar ao clicar na bandeira
+                document.querySelector('.iti__flag-container').addEventListener('click', function() {
+                    setTimeout(adjustDropdownPosition, 0);
+                });
+                
+                // Se já temos um número de telefone, usamos ele; senão definimos o código do país
+                if (phoneInputField.value.trim() === '') {
+                    phoneInputField.value = '+' + iti.getSelectedCountryData().dialCode + ' ';
+                } else {
+                    // Tentar formatar o número existente
+                    try {
+                        iti.setNumber(phoneInputField.value);
+                    } catch (e) {
+                        console.warn('Erro ao formatar número existente:', e);
+                    }
+                }
+
+                // Validar ao perder o foco
+                phoneInputField.addEventListener('blur', function() {
+                    this.classList.remove('error');
+                    const dialCode = '+' + iti.getSelectedCountryData().dialCode;
+                    
+                    // Verificar se o campo está vazio (apenas código do país)
+                    if (!this.value.trim() || this.value.trim() === dialCode + ' ') {
+                        this.classList.add('error');
+                        // Não mostrar mensagem aqui, apenas marcar o campo
+                    }
+                    // Validar o formato se tiver algum número além do código do país
+                    else if (iti.getNumber().length > dialCode.length && !iti.isValidNumber()) {
+                        this.classList.add('error');
+                    }
+                });
+
+                // Listener para quando o usuário muda o país
+                phoneInputField.addEventListener("countrychange", function() {
+                    phoneInputField.value = '+' + iti.getSelectedCountryData().dialCode + ' ';
+                });
+
+                // Listener para formatar o número ao digitar
+                phoneInputField.addEventListener('input', function(e) {
+                    const target = e.target;
+                    const countryData = iti.getSelectedCountryData();
+                    const dialCode = '+' + countryData.dialCode;
+                    let value = target.value;
+
+                    // Impedir a remoção do código de marcação
+                    if (!value.startsWith(dialCode + ' ')) {
+                        target.value = dialCode + ' ';
+                        return;
+                    }
+
+                    // Formatação específica para Portugal
+                    if (countryData.iso2 === 'pt') {
+                        // Pegar a parte após o código de marcação e remover todos os não-dígitos
+                        let numberPart = value.substring(dialCode.length + 1).replace(/\D/g, '');
+                        
+                        // Limitar a 9 dígitos para telefone móvel em Portugal
+                        numberPart = numberPart.substring(0, 9);
+
+                        // Formatar com um espaço a cada 3 dígitos
+                        const formattedNumberPart = numberPart.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+                        
+                        // Construir o novo valor
+                        const newValue = dialCode + ' ' + formattedNumberPart;
+                        
+                        // Atualizar o valor do input
+                        if (target.value !== newValue) {
+                           target.value = newValue;
+                        }
+                    }
+                });
+            });
+            
+            // Atualizar o manipulador de eventos de submit no formulário de perfil
+            $('#inlineProfileForm').on('submit', function(e) {
+                // Verificar se o número de telefone está vazio
+                const dialCode = '+' + iti.getSelectedCountryData().dialCode + ' ';
+                if (!phoneInputField.value.trim() || phoneInputField.value.trim() === dialCode) {
+                    e.preventDefault(); // Impedir envio do formulário
+                    phoneInputField.classList.add('error');
+                    showNotification('O número de telefone não pode estar vazio.', 'error');
+                    return false;
+                }
+                
+                if (iti && phoneInputField.value.trim()) {
+                    if (!iti.isValidNumber()) {
+                        e.preventDefault(); // Impedir envio do formulário
+                        phoneInputField.classList.add('error');
+                        showNotification('Número de telemóvel inválido.', 'error');
+                        return false;
+                    }
+                    // Atualizar o valor do input de telefone para o número internacional completo e formatado
+                    const formattedNumber = iti.getNumber();
+                    phoneInputField.value = formattedNumber;
+                    
+                    // Armazenar o número formatado para atualizações de UI
+                    $(phoneInputField).data('formatted-number', formattedNumber);
+                }
+            });
+        }
     });
     </script>
 
