@@ -28,7 +28,6 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <title>A Minha Conta - Pet & Repet</title>
 </head>
 <body>
@@ -248,7 +247,7 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                                             <span class="info-label">Nova Password</span>
                                             <div class="input-group">
                                                 <i class="input-icon fas fa-lock"></i>
-                                                <input type="password" id="new_password" name="new_password" class="form-input" placeholder="Nova password" required>
+                                                <input type="password" id="new_password" name="new_password" class="form-input" required>
                                                 <button type="button" class="password-toggle" onclick="togglePassword('new_password')">
                                                     <i class="far fa-eye"></i>
                                                 </button>
@@ -264,7 +263,7 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                                             <span class="info-label">Confirmar Password</span>
                                             <div class="input-group">
                                                 <i class="input-icon fas fa-lock"></i>
-                                                <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Confirmar nova password" required>
+                                                <input type="password" id="confirm_password" name="confirm_password" class="form-input" required>
                                                 <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">
                                                     <i class="far fa-eye"></i>
                                                 </button>
@@ -1436,19 +1435,6 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
             toggle.className = 'far fa-eye';
         }
     }
-
-    function togglePassword(fieldId) {
-            const field = document.getElementById(fieldId);
-            const toggle = field.parentElement.querySelector('.password-toggle i');
-            
-            if (field.type === 'password') {
-                field.type = 'text';
-                toggle.className = 'far fa-eye-slash';
-            } else {
-                field.type = 'password';
-                toggle.className = 'far fa-eye';
-            }
-        }
 
 
     $(document).ready(function() {

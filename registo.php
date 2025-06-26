@@ -28,8 +28,8 @@ if($_POST) {
         $error_message = "Por favor, preencha todos os campos obrigatórios.";
     } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Email inválido.";
-    } elseif(strlen($password) < 6) {
-        $error_message = "A password deve ter pelo menos 6 caracteres.";
+    } elseif(strlen($password) < 8) {
+        $error_message = "A password deve ter pelo menos 8 caracteres.";
     } elseif($password !== $confirm_password) {
         $error_message = "As passwords não coincidem.";
     } elseif($user->emailExists($email)) {
