@@ -1420,11 +1420,16 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                         const email = $('input[name="email"]').val();
                         
                         // Obter o número de telefone formatado do campo de telefone
-                        // Se usamos intlTelInput, pegamos o número formatado, senão usamos o valor do input
                         let phone;
                         const phoneInput = $('input[name="phone"]');
-                        if (phoneInput.data('formatted-number')) {
-                            phone = phoneInput.data('formatted-number');
+                        if (window.iti && phoneInput.val() && phoneInput.val().trim()) {
+                            // Se temos o plugin intlTelInput ativo, usamos seu método getNumber()
+                            try {
+                                phone = window.iti.getNumber();
+                            } catch(e) {
+                                console.warn('Não foi possível obter o número formatado:', e);
+                                phone = phoneInput.val();
+                            }
                         } else if (phoneInput.val() && phoneInput.val().trim()) {
                             phone = phoneInput.val();
                         } else {
@@ -1632,13 +1637,19 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
         if (phoneInputField) {
             iti = window.intlTelInput(phoneInputField, {
                 initialCountry: "pt", // Definir Portugal como país padrão
-                separateDialCode: true, // Separar o código para ficar ao lado da bandeira
-                dropdownContainer: document.body, // Corrige problemas de visibilidade do dropdown
-                nationalMode: false, // Mostrar código do país no input
-                placeholderNumberType: "MOBILE", // Mostrar placeholder para número móvel
-                customContainer: "iti", // Container consistente
-                autoPlaceholder: "aggressive", // Mostrar placeholder mesmo com código de país
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                separateDialCode: false, // Não separar o código - será parte do input
+                nationalMode: false, // Show dial code in the input
+                autoPlaceholder: "off", // Desligar o placeholder automático para usar nosso formato personalizado
+                customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                    // Para Portugal, usar nosso formato personalizado
+                    if (selectedCountryData.iso2 === 'pt') {
+                        return "+351 9xx xxx xxx";
+                    }
+                    return selectedCountryPlaceholder;
+                },
+                placeholderNumberType: "MOBILE", // Show mobile number placeholder 
+                preferredCountries: ['pt', 'br', 'es', 'fr', 'de', 'gb'], // Países preferidos no topo
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
             });
 
             // Disponibilizar globalmente para acesso por outras funções
@@ -1646,104 +1657,93 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
 
             // Esperar pelo carregamento do plugin e scripts utils
             iti.promise.then(function() {
-                // Função para ajustar a posição do dropdown quando ele aparecer
-                function adjustDropdownPosition() {
-                    const countryList = document.querySelector('body > .iti__country-list');
-                    if (countryList) {
-                        const phoneInput = document.querySelector("input[name='phone']");
-                        const phoneRect = phoneInput.getBoundingClientRect();
-                        
-                        // Posicionar o dropdown logo abaixo do input
-                        countryList.style.top = (phoneRect.bottom + window.scrollY) + 'px';
-                        countryList.style.left = phoneRect.left + 'px';
-                        countryList.style.width = phoneRect.width + 'px';
-                    }
-                }
                 
-                // Observer para detectar quando o dropdown é adicionado ao DOM
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'childList' && mutation.addedNodes.length) {
-                            for (let node of mutation.addedNodes) {
-                                if (node.classList && node.classList.contains('iti__country-list')) {
-                                    adjustDropdownPosition();
-                                }
-                            }
-                        }
-                    });
-                });
-                
-                // Iniciar observação do body para detectar adição do dropdown
-                observer.observe(document.body, { childList: true, subtree: false });
-                
-                // Também ajustar ao clicar na bandeira
-                document.querySelector('.iti__flag-container').addEventListener('click', function() {
-                    setTimeout(adjustDropdownPosition, 0);
-                });
-                
-                // Se já temos um número de telefone, usamos ele; senão definimos o código do país
+                // Set initial value with dial code for Portugal
                 if (phoneInputField.value.trim() === '') {
-                    phoneInputField.value = '+' + iti.getSelectedCountryData().dialCode + ' ';
-                } else {
-                    // Tentar formatar o número existente
-                    try {
-                        iti.setNumber(phoneInputField.value);
-                    } catch (e) {
-                        console.warn('Erro ao formatar número existente:', e);
+                    const countryData = iti.getSelectedCountryData();
+                    const dialCode = '+' + countryData.dialCode;
+                    phoneInputField.value = dialCode + ' ';
+                    
+                    // Definir o placeholder customizado
+                    if (countryData.iso2 === 'pt') {
+                        phoneInputField.setAttribute('placeholder', '+351 9xx xxx xxx');
                     }
                 }
 
-                // Validar ao perder o foco
+                // Listener for blur to validate
                 phoneInputField.addEventListener('blur', function() {
                     this.classList.remove('error');
                     const dialCode = '+' + iti.getSelectedCountryData().dialCode;
-                    
-                    // Verificar se o campo está vazio (apenas código do país)
-                    if (!this.value.trim() || this.value.trim() === dialCode + ' ') {
-                        this.classList.add('error');
-                        // Não mostrar mensagem aqui, apenas marcar o campo
-                    }
-                    // Validar o formato se tiver algum número além do código do país
-                    else if (iti.getNumber().length > dialCode.length && !iti.isValidNumber()) {
+                    // Only validate if the user has entered some digits beyond the dial code
+                    if (iti.getNumber().length > dialCode.length && !iti.isValidNumber()) {
                         this.classList.add('error');
                     }
                 });
 
                 // Listener para quando o usuário muda o país
                 phoneInputField.addEventListener("countrychange", function() {
-                    phoneInputField.value = '+' + iti.getSelectedCountryData().dialCode + ' ';
+                    // Atualizar o prefixo do país no valor do input
+                    const selectedCountryData = iti.getSelectedCountryData();
+                    const dialCode = '+' + selectedCountryData.dialCode;
+                    
+                    // Se o input estiver vazio ou tiver apenas o código antigo, inserir novo código
+                    if (!phoneInputField.value || phoneInputField.value.trim() === '' || 
+                        phoneInputField.value.match(/^\+\d+$/)) {
+                        phoneInputField.value = dialCode + ' ';
+                    }
                 });
 
-                // Listener para formatar o número ao digitar
+                // Listener para formatar o número durante a digitação
                 phoneInputField.addEventListener('input', function(e) {
                     const target = e.target;
+                    const currentText = target.value;
                     const countryData = iti.getSelectedCountryData();
                     const dialCode = '+' + countryData.dialCode;
-                    let value = target.value;
-
-                    // Impedir a remoção do código de marcação
-                    if (!value.startsWith(dialCode + ' ')) {
+                    
+                    // Se o usuário estiver tentando apagar o código do país, impedir
+                    if (!currentText.includes('+')) {
                         target.value = dialCode + ' ';
                         return;
                     }
 
-                    // Formatação específica para Portugal
+                    // Apply Portugal-specific formatting
                     if (countryData.iso2 === 'pt') {
-                        // Pegar a parte após o código de marcação e remover todos os não-dígitos
-                        let numberPart = value.substring(dialCode.length + 1).replace(/\D/g, '');
+                        // Extrair apenas os números após o código do país
+                        const rawInput = currentText.replace(/\D/g, '');
+                        const countryCode = countryData.dialCode;
                         
-                        // Limitar a 9 dígitos para telefone móvel em Portugal
-                        numberPart = numberPart.substring(0, 9);
-
-                        // Formatar com um espaço a cada 3 dígitos
-                        const formattedNumberPart = numberPart.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+                        // Remover o código do país dos dígitos (se estiver presente)
+                        let phoneDigits = '';
+                        if (rawInput.startsWith(countryCode)) {
+                            phoneDigits = rawInput.substring(countryCode.length);
+                        } else {
+                            phoneDigits = rawInput;
+                        }
                         
-                        // Construir o novo valor
-                        const newValue = dialCode + ' ' + formattedNumberPart;
+                        // Limitar a exatamente 9 dígitos para números portugueses
+                        phoneDigits = phoneDigits.substring(0, 9);
                         
-                        // Atualizar o valor do input
+                        // Formatar com espaços a cada 3 dígitos (formato: 963 963 963)
+                        let formattedNumber = '';
+                        for (let i = 0; i < phoneDigits.length; i++) {
+                            if (i > 0 && i % 3 === 0) {
+                                formattedNumber += ' ';
+                            }
+                            formattedNumber += phoneDigits[i];
+                        }
+                        
+                        // Construir o valor final com código do país
+                        const newValue = dialCode + ' ' + formattedNumber;
+                        
+                        // Atualizar o valor do input se for diferente
                         if (target.value !== newValue) {
-                           target.value = newValue;
+                            target.value = newValue;
+                            
+                            // Posicionar o cursor no final do input se estiver ativamente digitando
+                            if (document.activeElement === target) {
+                                const end = target.value.length;
+                                target.setSelectionRange(end, end);
+                            }
                         }
                     }
                 });
@@ -1751,15 +1751,6 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
             
             // Atualizar o manipulador de eventos de submit no formulário de perfil
             $('#inlineProfileForm').on('submit', function(e) {
-                // Verificar se o número de telefone está vazio
-                const dialCode = '+' + iti.getSelectedCountryData().dialCode + ' ';
-                if (!phoneInputField.value.trim() || phoneInputField.value.trim() === dialCode) {
-                    e.preventDefault(); // Impedir envio do formulário
-                    phoneInputField.classList.add('error');
-                    showNotification('O número de telefone não pode estar vazio.', 'error');
-                    return false;
-                }
-                
                 if (iti && phoneInputField.value.trim()) {
                     if (!iti.isValidNumber()) {
                         e.preventDefault(); // Impedir envio do formulário
@@ -1767,12 +1758,8 @@ $cart_count = $cart->getItemCount($user_id, $session_id);
                         showNotification('Número de telemóvel inválido.', 'error');
                         return false;
                     }
-                    // Atualizar o valor do input de telefone para o número internacional completo e formatado
-                    const formattedNumber = iti.getNumber();
-                    phoneInputField.value = formattedNumber;
-                    
-                    // Armazenar o número formatado para atualizações de UI
-                    $(phoneInputField).data('formatted-number', formattedNumber);
+                    // Atualizar o valor do input de telefone para o número internacional completo
+                    phoneInputField.value = iti.getNumber();
                 }
             });
         }
