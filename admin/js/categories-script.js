@@ -120,6 +120,65 @@ function confirmDeleteModal(categoryId, isMainCategory) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM carregado, sistema inicializado');
     // Não exibir mais mensagens automáticas ao carregar a página
+    
+    // Limpar modo de edição quando o modal for fechado (modal original para adicionar)
+    const categoryModal = document.getElementById('categoryModal');
+    if (categoryModal) {
+        categoryModal.addEventListener('hidden.bs.modal', function() {
+            const form = document.getElementById('categoryForm');
+            const editInfo = document.getElementById('editModeInfo');
+            const modalContent = this.querySelector('.modal-content');
+            const modalTitle = document.getElementById('modalActionText');
+            const btnSave = document.getElementById('btnSaveCategory');
+            
+            // Resetar formulário
+            if (form) form.reset();
+            
+            // Ocultar informações de edição
+            if (editInfo) editInfo.style.display = 'none';
+            
+            // Remover classe de modo de edição
+            if (modalContent) modalContent.classList.remove('edit-mode');
+            
+            // Resetar títulos e botões para modo de adição
+            if (modalTitle) modalTitle.textContent = 'Adicionar Nova Categoria';
+            if (btnSave) {
+                const span = btnSave.querySelector('span');
+                if (span) span.textContent = 'Salvar Categoria';
+                else btnSave.innerHTML = '<i class="fas fa-save me-2"></i> Salvar Categoria';
+            }
+            
+            // Remover campo de ação se existir
+            const actionInput = form?.querySelector('input[name="action"]');
+            if (actionInput) {
+                actionInput.remove();
+                console.log('Campo action removido');
+            }
+            
+            // Limpar também o campo category_id
+            const categoryIdField = form?.querySelector('#category_id');
+            if (categoryIdField) {
+                categoryIdField.value = '';
+                console.log('Campo category_id limpo');
+            }
+            
+            console.log('Modal de adição resetado');
+        });
+    }
+    
+    // Limpar modal de edição quando for fechado
+    const editCategoryModal = document.getElementById('editCategoryModal');
+    if (editCategoryModal) {
+        editCategoryModal.addEventListener('hidden.bs.modal', function() {
+            const form = document.getElementById('editCategoryForm');
+            
+            // Resetar formulário de edição
+            if (form) {
+                form.reset();
+                console.log('Modal de edição resetado');
+            }
+        });
+    }
 });
 
 // Verificação final quando a página estiver totalmente carregada

@@ -39,7 +39,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--primary-color) var(--sidebar-bg);
     box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Enhanced shadow for depth */
-    z-index: 10; /* Higher z-index to ensure it stays on top */
+    z-index: 100; /* Higher z-index to ensure it stays on top */
     border-right: 1px solid #e0e0e0;
 }
 

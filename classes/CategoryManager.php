@@ -444,16 +444,7 @@ class CategoryManager {
         }
     }
     
-    /**
-     * Get a category by ID
-     * @param int $id Category ID
-     * @return array|bool Category data or false if not found
-     */
-    public function getCategoryById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM categories WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    // Os métodos que estavam nesta seção foram removidos porque já existiam na classe
     
     /**
      * Count products in a category (including products in subcategories)
@@ -593,6 +584,69 @@ class CategoryManager {
             throw $e;
         }
     }
+    
+    /**
+     * Get categories by parent ID with detailed information including product count
+     * @param int $parent_id Parent category ID (0 for main categories)
+     * @return array Array of categories with the specified parent ID
+     */
+    public function getCategoriesByParent($parent_id = 0) {
+        $query = "SELECT c.*, 
+                 (SELECT COUNT(*) FROM categories WHERE parent_id = c.id) as subcategory_count,
+                 (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count
+                 FROM categories c
+                 WHERE " . ($parent_id > 0 ? "c.parent_id = ?" : "c.parent_id IS NULL OR c.parent_id = 0") . "
+                 ORDER BY c.name";
+        
+        $stmt = $this->db->prepare($query);
+        
+        if ($parent_id > 0) {
+            $stmt->bindParam(1, $parent_id);
+        }
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Get category by ID
+     * @param int $categoryId Category ID
+     * @return array|bool Category data or false if not found
+     */
+    public function getCategoryById($categoryId) {
+        try {
+            // Consulta principal para obter os dados básicos da categoria
+            $query = "SELECT c.*, p.name as parent_name,
+                     (SELECT COUNT(*) FROM categories WHERE parent_id = c.id) as subcategory_count,
+                     (SELECT COUNT(*) FROM product_categories WHERE category_id = c.id) as product_count
+                     FROM categories c
+                     LEFT JOIN categories p ON c.parent_id = p.id
+                     WHERE c.id = ?";
+            
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$categoryId]);
+            $category = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$category) {
+                return false;
+            }
+            
+            // Verificar se tem subcategorias
+            $category['has_subcategories'] = ($category['subcategory_count'] > 0);
+            
+            // Verificar se tem produtos associados
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM product_categories WHERE category_id = ?");
+            $stmt->execute([$categoryId]);
+            $category['has_products'] = ($stmt->fetchColumn() > 0);
+            
+            return $category;
+        } catch (Exception $e) {
+            error_log("Error getting category by ID: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+
     
     /**
      * Verifica se definir parentId como pai de categoryId criaria um ciclo na hierarquia

@@ -86,8 +86,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Usar o ToastManager centralizado para notificações padronizadas
                 showGlobalToast(data.message, isActivating ? 'success' : 'error');
                 
-                // Refresh the category table
-                loadCategories();
+                // Refresh the category table - DISABLED to prevent conflict with categories-table-loader.js
+                // Instead, call the global reload function if available
+                if (window.reloadCategoriesTable) {
+                    window.reloadCategoriesTable();
+                }
+                // loadCategories();
             } else {
                 throw new Error(data.error || 'Erro ao alterar o status da categoria');
             }
@@ -332,58 +336,9 @@ document.addEventListener('DOMContentLoaded', function() {
             row.classList.add('category-child');
         }
         
-        // Build row content with modern design focused on icons
-        row.innerHTML = `
-            <td>
-                <div class="d-flex align-items-center">
-                    <i class="fas ${isMain ? 'fa-folder' : 'fa-level-down-alt'}"></i>
-                    <span class="fw-${isMain ? 'bold' : 'normal'}">${category.name}</span>
-                </div>
-                ${category.description ? `<span class="d-none d-md-inline small text-muted">${category.description.substring(0, 50) + (category.description.length > 50 ? '...' : '')}</span>` : ''}
-            </td>
-            <td class="text-center">
-                <div class="d-flex flex-column align-items-center">
-                    <div class="mb-1" title="${category.subcategory_count || 0} subcategorias">
-                        <i class="fas fa-sitemap"></i>
-                        <span class="d-none d-md-inline-block">${category.subcategory_count || 0}</span>
-                    </div>
-                    <div title="${category.product_count || 0} produtos">
-                        <i class="fas fa-box"></i>
-                        <span class="d-none d-md-inline-block">${category.product_count || 0}</span>
-                    </div>
-                </div>
-            </td>
-            <td class="text-center">
-                <i class="fas ${category.is_active == 1 ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger'}" 
-                   title="${category.is_active == 1 ? 'Ativo' : 'Inativo'}"></i>
-            </td>
-            <td class="text-center">
-                <div class="btn-group">
-                    <button class="btn btn-action btn-edit btn-edit-category" data-id="${category.id}" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-action ${category.is_active == 1 ? 'btn-warning' : 'btn-success'} btn-toggle-status" 
-                        data-id="${category.id}" 
-                        data-status="${category.is_active}"
-                        title="${category.is_active == 1 ? 'Desativar' : 'Ativar'}">
-                        <i class="fas ${category.is_active == 1 ? 'fa-power-off' : 'fa-check'}"></i>
-                    </button>
-                    ${parseInt(category.id) > 3 ? `
-                        <button class="btn btn-action btn-delete btn-delete-category" 
-                            data-id="${category.id}" 
-                            data-is-main="${isMain}"
-                            onclick="confirmDeleteModal(${category.id}, ${isMain})"
-                            title="Excluir">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    ` : ''}
-                </div>
-            </td>
-        `;
-        
-        tbody.appendChild(row);
-    }
+       
     
-    // Initialize by loading categories
-    loadCategories();
-});
+        // Initialize by loading categories - DISABLED to prevent conflict with categories-table-loader.js
+        // loadCategories();
+        }
+    })

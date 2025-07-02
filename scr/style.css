@@ -441,53 +441,13 @@ body {
     margin-bottom: 20px;
 }
 
-.main-category {
-    margin: 0;
-}
-
-.category-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #f8f9fa;
-    color: #495057;
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 1px solid #dee2e6;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    width: 100%;
-}
-
-.category-title:hover {
-    background: #3498db;
-    color: #fff;
-    border-color: #2980b9;
-    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.3);
-    transform: translateY(-3px);
-}
-
-.category-title i {
-    font-size: 16px;
-    transition: transform 0.3s ease;
-}
-
-.category-title:hover i {
-    transform: scale(1.1) rotate(-12deg);
-}
-
 .dropdown-list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px; /* Espaçamento entre os links */
+    gap: 4px;
 }
 
 .dropdown-link {
@@ -1828,56 +1788,9 @@ body > .toastify-container {
 
 .account-content {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 1fr;
     gap: 40px;
     align-items: start;
-}
-
-.account-sidebar {
-    background: white;
-    border-radius: 12px;
-    padding: 0;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    position: sticky;
-    top: 160px;
-}
-
-.sidebar-menu {
-    padding: 20px 0;
-}
-
-.menu-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 24px;
-    color: #6c757d;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border-left: 3px solid transparent;
-}
-
-.menu-item:hover {
-    background: #f8f9fa;
-    color: #3498db;
-    text-decoration: none;
-}
-
-.menu-item.active {
-    background: #f1f8fe;
-    color: #3498db;
-    border-left-color: #3498db;
-}
-
-.menu-item.logout {
-    color: #e74c3c;
-    border-top: 1px solid #e9ecef;
-    margin-top: 10px;
-}
-
-.menu-item.logout:hover {
-    background: #fdf2f2;
-    color: #c0392b;
 }
 
 .account-main {

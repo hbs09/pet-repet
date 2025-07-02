@@ -205,6 +205,38 @@ try {
             $response['subcategories'] = $subcategories;
             break;
             
+        case 'toggle':
+            // Validar dados
+            if (empty($_POST['category_id']) || !isset($_POST['status'])) {
+                throw new Exception('ID da categoria e status são obrigatórios');
+            }
+            
+            $categoryId = $_POST['category_id'];
+            $newStatus = (int)$_POST['status'];
+            
+            // Obter categoria atual para verificação
+            $category = $categoryManager->getCategoryById($categoryId);
+            if (!$category) {
+                throw new Exception('Categoria não encontrada');
+            }
+            
+            // Atualizar status
+            $result = $categoryManager->updateCategory(
+                $categoryId,
+                $category['name'],
+                $category['description'],
+                $category['parent_id'],
+                $newStatus
+            );
+            
+            if ($result) {
+                $response['success'] = true;
+                $response['message'] = $newStatus == 1 ? 'Categoria ativada com sucesso!' : 'Categoria desativada com sucesso!';
+            } else {
+                throw new Exception('Erro ao atualizar status da categoria');
+            }
+            break;
+            
         default:
             throw new Exception('Ação desconhecida');
     }
