@@ -1500,9 +1500,9 @@ input[type="tel"].form-input {
     z-index: 1;
 }
 
-/* Garante que o texto não se sobreponha com o ícone quando ele estiver invisível */
-.input-group .input-icon.hidden {
-    opacity: 0;
+/* Garante que o ícone não ocupa espaço quando invisível */
+.input-group .input-icon[style*="opacity: 0"] {
+    opacity: 0 !important;
 }
 
 .form-input {
@@ -1556,6 +1556,10 @@ input[type="tel"].form-input {
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     padding: 16px 20px;
     font-size: 15px;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
 }
 
 .toastify.on.toastify-right {
@@ -1564,6 +1568,14 @@ input[type="tel"].form-input {
 
 .toastify.on.toastify-top {
     top: 20px;
+}
+
+/* Garantindo que o container do Toastify seja visível */
+body > .toastify-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
 }
 
 .toast-close {

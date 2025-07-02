@@ -60,7 +60,7 @@ class User {
 
     // Login do utilizador
     public function login($email, $password) {
-        $query = "SELECT id, first_name, last_name, email, password_hash FROM " . $this->table_name . " WHERE email = :email LIMIT 0,1";
+        $query = "SELECT id, first_name, last_name, email, password_hash, is_admin FROM " . $this->table_name . " WHERE email = :email LIMIT 0,1";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':email', $email);

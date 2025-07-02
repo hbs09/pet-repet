@@ -24,8 +24,14 @@ if($_POST) {
         $_SESSION['user_id'] = $user_data['id'];
         $_SESSION['user_first_name'] = $user_data['first_name'];
         $_SESSION['user_email'] = $user_data['email'];
+        $_SESSION['is_admin'] = $user_data['is_admin'];
         
-        header("Location: index.php");
+        // Redirecionar para o dashboard se for admin, ou para a página inicial se for cliente
+        if($user_data['is_admin'] == 1) {
+            header("Location: dashboard.php");
+        } else {
+            header("Location: index.php");
+        }
         exit;
     } else {
         $error_message = "Email ou password inválidos.";

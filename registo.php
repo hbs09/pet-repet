@@ -67,6 +67,21 @@ if($_POST) {
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <title>Registo - Pet & Repet</title>
     <meta name="description" content="Crie a sua conta Pet & Repet">
+    <style>
+        /* Estilo para esconder ícones quando input está em foco */
+        .input-group:focus-within .input-icon {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        
+        /* Garantir que os ícones não impedem o clique */
+        .input-icon {
+            pointer-events: none !important;
+            z-index: 1;
+        }
+    </style>
+    
 </head>
 <body class="auth-page-container page-register">
     <div class="auth-container">
@@ -101,6 +116,8 @@ if($_POST) {
                             <div class="input-group">
                                 <i class="input-icon fas fa-user"></i>
                                 <input type="text" id="first_name" name="first_name" class="form-input" 
+                                       pattern="[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ\s'-]+" 
+                                       title="Apenas letras, espaços, hífens e apóstrofes são permitidos"
                                        required 
                                        value="<?php echo isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : ''; ?>">
                             </div>
@@ -111,7 +128,9 @@ if($_POST) {
                             <div class="input-group">
                                 <i class="input-icon fas fa-user"></i>
                                 <input type="text" id="last_name" name="last_name" class="form-input" 
-                                        required 
+                                       pattern="[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ\s'-]+" 
+                                       title="Apenas letras, espaços, hífens e apóstrofes são permitidos"
+                                       required 
                                        value="<?php echo isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : ''; ?>">
                             </div>
                         </div>
@@ -223,6 +242,46 @@ if($_POST) {
         
         confirmPassword.addEventListener('input', validatePasswordMatch);
         password.addEventListener('input', validatePasswordMatch);
+        
+        // Nome e sobrenome: apenas letras
+        function validateNameField(input) {
+            // Regex para permitir apenas letras, espaços, hífens e apóstrofes (para nomes compostos)
+            const nameRegex = /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ\s'-]+$/;
+            
+            if (input.value && !nameRegex.test(input.value)) {
+                input.classList.add('error');
+                return false;
+            } else {
+                input.classList.remove('error');
+                return true;
+            }
+        }
+        
+        // Adicionar validação aos campos de nome
+        const firstName = document.getElementById('first_name');
+        const lastName = document.getElementById('last_name');
+        
+        firstName.addEventListener('input', function() {
+            validateNameField(this);
+        });
+        
+        lastName.addEventListener('input', function() {
+            validateNameField(this);
+        });
+        
+        // Impedir entrada de números nos campos de nome
+        function blockNumbers(e) {
+            const char = String.fromCharCode(e.which || e.keyCode);
+            
+            // Se for um número, prevenir o evento
+            if (/[0-9]/.test(char)) {
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        firstName.addEventListener('keypress', blockNumbers);
+        lastName.addEventListener('keypress', blockNumbers);
 
         // Enhanced form validation
         const inputs = document.querySelectorAll('.form-input');
@@ -235,12 +294,35 @@ if($_POST) {
                 icon.style.opacity = '0';
             }
             
+            // Função para esconder o ícone
+            function hideIcon(icon) {
+                if (icon) {
+                    icon.style.display = 'none';
+                    icon.style.opacity = '0';
+                }
+            }
+            
+            // Função para mostrar o ícone
+            function showIcon(icon, input) {
+                if (icon && input.value.trim() === '') {
+                    icon.style.display = '';
+                    icon.style.opacity = '1';
+                }
+            }
+            
             // Esconder ícone quando o input recebe foco
             input.addEventListener('focus', function() {
-                if (icon) {
-                    icon.style.opacity = '0';
-                    icon.style.transition = 'opacity 0.2s ease';
-                }
+                hideIcon(icon);
+            });
+            
+            // Esconder ícone imediatamente no click
+            input.addEventListener('mousedown', function() {
+                hideIcon(icon);
+            });
+            
+            // Esconder ícone no click (para dispositivos móveis)
+            input.addEventListener('touchstart', function() {
+                hideIcon(icon);
             });
             
             input.addEventListener('blur', function() {
@@ -251,10 +333,7 @@ if($_POST) {
                 }
                 
                 // Mostrar o ícone novamente se o campo estiver vazio após perder o foco
-                if (icon) {
-                    icon.style.opacity = this.value.trim() === '' ? '1' : '0';
-                    icon.style.transition = 'opacity 0.2s ease';
-                }
+                showIcon(icon, this);
             });
 
             input.addEventListener('input', function() {
@@ -263,15 +342,11 @@ if($_POST) {
                 }
                 
                 // Manter o ícone oculto enquanto digita
-                if (icon) {
-                    icon.style.opacity = '0';
-                    icon.style.transition = 'opacity 0.2s ease';
-                }
+                hideIcon(icon);
             });
         });                                                                    
 
 
-        // Adicionar evento para corrigir o layout após a página ser carregada completamente
         window.addEventListener('load', function() {
             // Corrigir layout dos inputs
             document.querySelectorAll('.form-input').forEach(input => {
@@ -283,6 +358,34 @@ if($_POST) {
             if (phoneInput) {
                 phoneInput.style.paddingLeft = '12px';  // Ajustar padding sem ícone de bandeira
             }
+            
+            // Garantir que os ícones têm o z-index correto e não bloqueiam eventos
+            document.querySelectorAll('.input-icon').forEach(icon => {
+                icon.style.zIndex = '1';
+                icon.style.pointerEvents = 'none'; // Impedir que o ícone capte cliques
+            });
+            
+            // Forçar que os inputs escondam os ícones quando recebem foco
+            document.querySelectorAll('.form-input').forEach(input => {
+                const inputGroup = input.parentElement;
+                const icon = inputGroup ? inputGroup.querySelector('.input-icon') : null;
+                
+                if (icon && input) {
+                    // Também podemos adicionar evento diretamente aos ícones
+                    icon.addEventListener('click', function(e) {
+                        this.style.display = 'none';
+                        input.focus();
+                        e.stopPropagation();
+                    });
+                    
+                    // Adicionar código inline para esconder o ícone quando o input obtém foco
+                    input.onfocus = function() { 
+                        icon.style.display = 'none'; 
+                        icon.style.opacity = '0';
+                        icon.style.visibility = 'hidden';
+                    };
+                }
+            });
         });
 
         // Add animated class to form groups on page load
@@ -294,12 +397,34 @@ if($_POST) {
                 }, index * 100);
             });
             
+            // Adicionar evento de clique nos grupos de input para garantir que os ícones desaparecem
+            document.querySelectorAll('.input-group').forEach(inputGroup => {
+                inputGroup.addEventListener('click', function() {
+                    const icon = this.querySelector('.input-icon');
+                    const input = this.querySelector('.form-input');
+                    if (icon && input) {
+                        icon.style.display = 'none';
+                        icon.style.opacity = '0';
+                        icon.style.visibility = 'hidden';
+                        // Garantir que o foco foi para o input
+                        input.focus();
+                    }
+                });
+            });
+            
             // Verificar inputs preenchidos ao carregar a página
             document.querySelectorAll('.form-input').forEach(input => {
                 const inputGroup = input.closest('.input-group');
                 const icon = inputGroup ? inputGroup.querySelector('.input-icon') : null;
                 if (icon && input.value && input.value.trim() !== '') {
                     icon.style.opacity = '0';
+                    icon.style.display = 'none';
+                }
+                
+                // Garantir que os ícones não bloqueiam cliques nos inputs
+                if (icon) {
+                    icon.style.pointerEvents = 'none';
+                    icon.style.zIndex = '1';
                 }
             });
 

@@ -1,0 +1,507 @@
+/**
+ * Minimalist Category Management Styles
+ * Focused on icons and reduced text for a cleaner UI
+ */
+
+/* Modern Card Header Styles */
+.card {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background: #ffffff;
+    border-bottom: none;
+    padding: 18px 20px;
+    position: relative;
+}
+
+.card-header::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    bottom: 0;
+    height: 3px;
+    width: 50px;
+    background: linear-gradient(90deg, #8c52ff, #5e17eb);
+    border-radius: 3px;
+}
+
+.card-header h5 {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+    letter-spacing: -0.3px;
+}
+
+.card-header .fas {
+    color: #8c52ff;
+}
+
+.card-header .input-group {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-header .form-control {
+    border: 1px solid #eaeaea;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+}
+
+.card-header .btn-outline-secondary {
+    border-color: #eaeaea;
+    color: #8c52ff;
+    background: #fff;
+}
+
+.card-header .dropdown-toggle {
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
+    padding: 8px 16px;
+    background: #fff;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Modern Card Body Styles */
+.card-body {
+    padding: 24px 20px;
+    background-color: #ffffff;
+    position: relative;
+}
+
+.card-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(140, 82, 255, 0.1), transparent);
+}
+
+/* Table container with enhanced styles */
+.table-responsive {
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 15px 35px rgba(140, 82, 255, 0.07), 0 5px 15px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    position: relative;
+    border: none;
+    margin: 10px 0;
+}
+
+/* Efeito de gradiente sutil no fundo da tabela */
+.table-responsive::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(180deg, 
+                rgba(245, 245, 255, 0.8) 0%, 
+                rgba(255, 255, 255, 1) 50%,
+                rgba(245, 245, 255, 0.8) 100%);
+    pointer-events: none;
+}
+
+/* Estilo da tabela */
+.table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* Cabeçalho da tabela */
+.table thead {
+    position: relative;
+    z-index: 2;
+}
+
+.table thead::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #8c52ff, #5e17eb);
+    opacity: 0.7;
+}
+
+.table thead th {
+    background-color: #f9f7ff;
+    color: #5e17eb;
+    font-weight: 600;
+    padding: 18px 20px;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    position: relative;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.table thead th:first-child {
+    border-radius: 20px 0 0 0;
+    padding-left: 25px;
+}
+
+.table thead th:last-child {
+    border-radius: 0 20px 0 0;
+    padding-right: 25px;
+}
+
+.table thead th.text-center {
+    text-align: center;
+}
+
+/* Corpo da tabela */
+.table tbody {
+    position: relative;
+    z-index: 1;
+}
+
+.table tbody td {
+    padding: 18px 20px;
+    vertical-align: middle;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    font-weight: 500;
+    color: #333;
+    transition: all 0.25s ease;
+}
+
+.table tbody td:first-child {
+    padding-left: 25px;
+}
+
+.table tbody td:last-child {
+    padding-right: 25px;
+}
+
+/* Efeito hover nas linhas */
+.table tbody tr {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(140, 82, 255, 0.1);
+    z-index: 3;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Estilo de linhas alternadas */
+.table tbody tr:nth-child(even) {
+    background-color: rgba(250, 250, 255, 0.5);
+}
+
+/* Categoria principal */
+.table-primary {
+    background: linear-gradient(90deg, rgba(140, 82, 255, 0.08), rgba(140, 82, 255, 0.02)) !important;
+}
+
+.table-primary td {
+    border-bottom: 1px solid rgba(140, 82, 255, 0.1);
+    font-weight: 600;
+}
+
+/* Subcategorias */
+.category-child {
+    background-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Nome da categoria - ícone e texto */
+.table td .d-flex.align-items-center {
+    display: flex;
+    align-items: center;
+}
+
+/* Ícone de pasta */
+.fa-folder {
+    font-size: 1.2rem;
+    color: #8c52ff;
+    background: rgba(140, 82, 255, 0.1);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin-right: 12px;
+}
+
+/* Ícone de subcategoria */
+.fa-level-down-alt {
+    transform: rotate(90deg);
+    font-size: 0.9rem;
+    color: #888;
+    background: rgba(0, 0, 0, 0.05);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin-right: 12px;
+}
+
+/* Descrição da categoria */
+.small.text-muted {
+    margin-top: 5px;
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Contadores */
+.table td.text-center .d-flex {
+    justify-content: center;
+}
+
+.table td.text-center .d-flex .mb-1,
+.table td.text-center .d-flex div {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin: 3px 0;
+}
+
+.fa-sitemap, .fa-box {
+    margin-right: 5px;
+    font-size: 0.85rem;
+}
+
+.fa-sitemap {
+    color: #4e73df;
+}
+
+.fa-box {
+    color: #ffa600;
+}
+
+/* Status toggles */
+.table td.text-center i.fa-toggle-on,
+.table td.text-center i.fa-toggle-off {
+    font-size: 1.6rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+
+.table td.text-center i.fa-toggle-on {
+    color: #36b37e;
+    text-shadow: 0 0 10px rgba(54, 179, 126, 0.3);
+}
+
+.table td.text-center i.fa-toggle-off {
+    color: #f44336;
+    text-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+}
+
+.table td.text-center i.fa-toggle-on:hover,
+.table td.text-center i.fa-toggle-off:hover {
+    transform: scale(1.25);
+}
+
+/* Botões de ações */
+.table .btn-group {
+    display: flex;
+    justify-content: center;
+}
+
+.table .btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin: 0 4px;
+    background: white;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.table .btn-action:hover {
+    transform: translateY(-3px);
+}
+
+.table .btn-action.btn-edit:hover {
+    background: #4e73df;
+    color: white;
+    box-shadow: 0 5px 15px rgba(78, 115, 223, 0.4);
+}
+
+.table .btn-action.btn-warning:hover {
+    background: #f6c23e;
+    color: white;
+    box-shadow: 0 5px 15px rgba(246, 194, 62, 0.4);
+}
+
+.table .btn-action.btn-success:hover {
+    background: #1cc88a;
+    color: white;
+    box-shadow: 0 5px 15px rgba(28, 200, 138, 0.4);
+}
+
+.table .btn-action.btn-delete:hover {
+    background: #e74a3b;
+    color: white;
+    box-shadow: 0 5px 15px rgba(231, 74, 59, 0.4);
+}
+
+/* Estado de carregamento */
+.loading-state {
+    background: linear-gradient(135deg, rgba(140, 82, 255, 0.03), rgba(140, 82, 255, 0.07)) !important;
+    border-radius: 0 !important;
+    backdrop-filter: blur(5px);
+    animation: pulse-subtle 2s infinite;
+}
+
+@keyframes pulse-subtle {
+    0% { background-color: rgba(140, 82, 255, 0.03); }
+    50% { background-color: rgba(140, 82, 255, 0.07); }
+    100% { background-color: rgba(140, 82, 255, 0.03); }
+}
+
+.loading-pulse {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-grow {
+    background: linear-gradient(135deg, #8c52ff, #5e17eb);
+    box-shadow: 0 0 15px rgba(140, 82, 255, 0.5);
+    border-radius: 50%;
+}
+
+/**
+ * Tooltip enhancements
+ */
+.tooltip-inner {
+    max-width: 200px;
+    padding: 6px 12px;
+    background-color: #333;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Footer Styling */
+.card-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 16px 20px;
+}
+
+.pagination .page-link {
+    border-radius: 6px;
+    margin: 0 2px;
+    color: #8c52ff;
+    border-color: #eaeaea;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #8c52ff;
+    border-color: #8c52ff;
+}
+
+/* Empty state styling */
+.table td[colspan] {
+    padding: 30px !important;
+}
+
+/* Total Counter Badge */
+.total-counter .badge {
+    background: linear-gradient(135deg, rgba(140, 82, 255, 0.1), rgba(94, 23, 235, 0.2));
+    color: #8c52ff;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 8px 15px;
+}
+
+.total-counter .badge strong {
+    font-weight: 700;
+}
+
+/* Melhorando o estilo dos ícones nas células */
+.fa-folder {
+    color: #8c52ff;
+}
+
+.fa-level-down-alt {
+    color: #6c757d;
+    transform: rotate(90deg);
+    font-size: 0.8rem;
+}
+
+.fa-sitemap {
+    color: #17a2b8;
+}
+
+.fa-box {
+    color: #ffc107;
+}
+
+/* Container principal da tabela */
+.table-container {
+    padding: 10px;
+    position: relative;
+}
+
+/* Adiciona um efeito de brilho sutil */
+.table-container::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    animation: shine 8s infinite;
+}
+
+@keyframes shine {
+    0% {
+        opacity: 0;
+        transform: rotate(30deg) translate(-100%, -100%);
+    }
+    20% {
+        opacity: 0;
+    }
+    40% {
+        opacity: 0.3;
+    }
+    60% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+        transform: rotate(30deg) translate(100%, 100%);
+    }
+}

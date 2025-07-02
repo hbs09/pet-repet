@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depuração do Toastify</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background: #f7f7f7;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .button-group {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .log-area {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+        
+        .toastify {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de Toastify</h1>
+        
+        <div class="button-group">
+            <button id="infoToast">Info Toast</button>
+            <button id="successToast">Success Toast</button>
+            <button id="warningToast">Warning Toast</button>
+            <button id="errorToast">Error Toast</button>
+            <button id="checkToastify">Verificar Toastify</button>
+        </div>
+        
+        <div class="button-group">
+            <button id="testPositionTop">Posição: Topo</button>
+            <button id="testPositionCenter">Posição: Centro</button>
+            <button id="testPositionBottom">Posição: Baixo</button>
+        </div>
+        
+        <div class="log-area" id="logArea"></div>
+    </div>
+    
+    <script>
+        // Função para adicionar logs à área de logs
+        function addLog(message) {
+            const logArea = document.getElementById('logArea');
+            const log = document.createElement('div');
+            log.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logArea.appendChild(log);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+        
+        // Verificar se Toastify está disponível
+        if (typeof Toastify === 'undefined') {
+            addLog('ERRO: Toastify não está definido. A biblioteca pode não ter sido carregada corretamente.');
+        } else {
+            addLog('Toastify carregado com sucesso!');
+        }
+        
+        // Função para exibir toast
+        function showToast(message, type = 'info', position = 'center', gravity = 'top') {
+            addLog(`Tentando exibir toast: "${message}" (${type})`);
+            
+            let background = "#3498db"; // azul para info
+            let duration = 3000;
+            
+            if (type === 'success') {
+                background = "#2ecc71"; // verde
+                duration = 4000;
+            } else if (type === 'error') {
+                background = "#e74c3c"; // vermelho
+                duration = 6000;
+            } else if (type === 'warning') {
+                background = "linear-gradient(to right, #ff7e5f, #feb47b)"; // laranja
+                duration = 5000;
+            }
+            
+            try {
+                Toastify({
+                    text: message,
+                    duration: duration,
+                    gravity: gravity,
+                    position: position,
+                    style: {
+                        background: background,
+                        borderRadius: "8px",
+                        boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+                        fontSize: "14px",
+                        padding: "12px 20px"
+                    },
+                    onClick: function(){
+                        addLog(`Toast clicado: "${message}"`);
+                    }
+                }).showToast();
+                
+                addLog(`Toast exibido com sucesso: "${message}"`);
+            } catch (error) {
+                addLog(`ERRO ao exibir toast: ${error.message}`);
+                console.error("Erro ao exibir toast:", error);
+            }
+        }
+        
+        // Event listeners para os botões
+        document.getElementById('infoToast').addEventListener('click', function() {
+            showToast('Este é um toast informativo', 'info');
+        });
+        
+        document.getElementById('successToast').addEventListener('click', function() {
+            showToast('Operação realizada com sucesso!', 'success');
+        });
+        
+        document.getElementById('warningToast').addEventListener('click', function() {
+            showToast('Atenção! Esta ação requer cuidado.', 'warning');
+        });
+        
+        document.getElementById('errorToast').addEventListener('click', function() {
+            showToast('Erro! Não foi possível completar a operação.', 'error');
+        });
+        
+        document.getElementById('checkToastify').addEventListener('click', function() {
+            addLog(`Status do Toastify: ${typeof Toastify}`);
+            if (typeof Toastify === 'function') {
+                addLog('Toastify é uma função válida');
+            } else {
+                addLog('ERRO: Toastify não é uma função válida');
+            }
+        });
+        
+        document.getElementById('testPositionTop').addEventListener('click', function() {
+            showToast('Toast no topo da tela', 'info', 'center', 'top');
+        });
+        
+        document.getElementById('testPositionCenter').addEventListener('click', function() {
+            showToast('Toast no centro da tela', 'info', 'center', 'bottom');
+        });
+        
+        document.getElementById('testPositionBottom').addEventListener('click', function() {
+            showToast('Toast na parte inferior da tela', 'info', 'center', 'bottom');
+        });
+        
+        // Teste automático após carregamento
+        window.addEventListener('load', function() {
+            addLog('Página totalmente carregada');
+            setTimeout(() => {
+                showToast('Página de teste do Toastify carregada', 'info');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
